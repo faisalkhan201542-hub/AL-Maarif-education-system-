@@ -86,14 +86,14 @@ export const getStudentProfileBundle = async (req, res) => {
 // @desc Create student
 // @route POST /api/students
 export const createStudent = async (req, res) => {
-  const { name, fatherName, fatherWhatsapp, gender, dob, address, class: className, rollNumber, parentContact, admissionDate, status } =
+  const { name, fatherName, fatherWhatsapp, gender, dob, address, class: className, rollNumber, parentContact, admissionDate, status, registrationNumber: providedRegNumber } =
     req.body;
 
   if (!name || !fatherName || !fatherWhatsapp || !gender || !dob || !className || !rollNumber) {
     return res.status(400).json({ message: "Missing required student fields" });
   }
 
-  const registrationNumber = await generateRegistrationNumber();
+  const registrationNumber = providedRegNumber || await generateRegistrationNumber();
   const admissionNumber = await generateAdmissionNumber();
 
   const photoUrl = req.file ? `/uploads/students/${req.file.filename}` : "";
@@ -125,6 +125,7 @@ export const updateStudent = async (req, res) => {
   if (!student) return res.status(404).json({ message: "Student not found" });
 
   const fields = [
+    "registrationNumber",
     "name",
     "fatherName",
     "fatherWhatsapp",

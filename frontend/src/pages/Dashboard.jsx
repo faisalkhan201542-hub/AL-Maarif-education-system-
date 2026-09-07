@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Users, UserCog, School, CalendarCheck, CalendarX, Wallet, Coins, Megaphone } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import api from "../api/axios.js";
 import StatCard from "../components/StatCard.jsx";
 import Loader from "../components/Loader.jsx";
 import { fmtDate, fmtMoney } from "../utils/format.js";
+
+const PIE_COLORS = ["#2563eb", "#ec4899"]; // Blue for Boys, Pink for Girls
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -16,11 +18,21 @@ export default function Dashboard() {
 
   if (!data) return <Loader label="Loading dashboard..." />;
 
+  const genderData = [
+    { name: "Boys", value: data.genderStats?.boys || 0 },
+    { name: "Girls", value: data.genderStats?.girls || 0 },
+  ];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Principal Dashboard</h1>
-        <p className="text-sm text-gray-400">Overview of Al-Maarif Education</p>
+      <div className="bg-white rounded-2xl p-6 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Principal Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">Overview of Al-Maarif Education</p>
+        </div>
+        <div className="px-4 py-2 bg-primary-50 text-primary-600 ring-1 ring-primary-100 rounded-xl text-sm font-semibold">
+          Academic Year 2026-27
+        </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -36,15 +48,26 @@ export default function Dashboard() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="card">
-          <h2 className="font-semibold text-gray-700 mb-4">Students by Class</h2>
+          <h2 className="font-semibold text-gray-700 mb-4">Gender Ratio (Boys / Girls)</h2>
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={data.studentsByClass}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="class" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+            <PieChart>
+              <Pie
+                data={genderData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={90}
+                paddingAngle={5}
+                dataKey="value"
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              >
+                {genderData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                ))}
+              </Pie>
               <Tooltip />
-              <Bar dataKey="count" fill="#178658" radius={[4, 4, 0, 0]} />
-            </BarChart>
+              <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
           </ResponsiveContainer>
         </div>
 

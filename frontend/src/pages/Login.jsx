@@ -29,19 +29,16 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950 p-4">
       <div className="w-full max-w-md">
-        <div className="flex justify-center mb-6">
-          <Logo size={56} dark />
-        </div>
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-14 h-14 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center mb-3">
-              <GraduationCap size={28} />
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 md:p-10 border border-white/20">
+          <div className="flex flex-col items-center mb-8 text-center">
+            <div className="mb-6 transform hover:scale-105 transition-transform duration-300">
+              <Logo size={72} dark={false} />
             </div>
-            <h1 className="text-xl font-bold text-gray-800">Principal Login</h1>
-            <p className="text-sm text-gray-400 mt-1">Al-Maarif Education Admin Panel</p>
+            <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Welcome Back</h1>
+            <p className="text-sm text-gray-500 mt-2">Sign in to the principal administration panel</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="label">WhatsApp Number</label>
               <div className="relative">

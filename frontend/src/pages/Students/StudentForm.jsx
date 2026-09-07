@@ -8,7 +8,7 @@ import Loader from "../../components/Loader.jsx";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const empty = {
-  name: "", fatherName: "", fatherWhatsapp: "", parentContact: "",
+  registrationNumber: "", admissionNumber: "", name: "", fatherName: "", fatherWhatsapp: "", parentContact: "",
   gender: "Male", dob: "", address: "", class: "KG", rollNumber: "",
   admissionDate: "", status: "Active",
 };
@@ -54,7 +54,7 @@ export default function StudentForm() {
     try {
       const fd = new FormData();
       Object.entries(form).forEach(([k, v]) => {
-        if (v !== undefined && v !== null && !["_id", "registrationNumber", "admissionNumber", "createdAt", "updatedAt", "__v", "photoUrl"].includes(k)) {
+        if (v !== undefined && v !== null && !["_id", "createdAt", "updatedAt", "__v", "photoUrl"].includes(k)) {
           fd.append(k, v);
         }
       });
@@ -91,6 +91,14 @@ export default function StudentForm() {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="label">Registration Number</label>
+            <input name="registrationNumber" placeholder="Auto-generated if left blank" className="input" value={form.registrationNumber} onChange={handleChange} />
+          </div>
+          <div>
+            <label className="label">Admission / Reg. Entry No.</label>
+            <input name="admissionNumber" placeholder="Auto-generated if left blank" className="input" value={form.admissionNumber} onChange={handleChange} />
+          </div>
           <div>
             <label className="label">Student Name *</label>
             <input name="name" required className="input" value={form.name} onChange={handleChange} />

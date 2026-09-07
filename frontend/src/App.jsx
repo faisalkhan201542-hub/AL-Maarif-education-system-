@@ -27,10 +27,14 @@ import ExamList from "./pages/Exams/ExamList.jsx";
 import ResultEntry from "./pages/Results/ResultEntry.jsx";
 import ResultCard from "./pages/Results/ResultCard.jsx";
 
+import SubjectList from "./pages/Subjects/SubjectList.jsx";
+import TimetablePage from "./pages/Timetable/TimetablePage.jsx";
+
 import AnnouncementList from "./pages/Announcements/AnnouncementList.jsx";
 import Reports from "./pages/Reports/Reports.jsx";
 import SchoolSettingsPage from "./pages/Settings/SchoolSettingsPage.jsx";
 import SchoolLocation from "./pages/Location/SchoolLocation.jsx";
+import CertificatePage from "./pages/Certificate/CertificatePage.jsx";
 
 export default function App() {
   return (
@@ -71,10 +75,14 @@ export default function App() {
         <Route path="exams/:examId/results" element={<ResultEntry />} />
         <Route path="results/:id" element={<ResultCard />} />
 
+        <Route path="subjects" element={<SubjectList />} />
+        <Route path="timetable" element={<TimetablePage />} />
+
         <Route path="announcements" element={<AnnouncementList />} />
         <Route path="reports" element={<Reports />} />
         <Route path="settings" element={<SchoolSettingsPage />} />
         <Route path="location" element={<SchoolLocation />} />
+        <Route path="certificate" element={<CertificatePage />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

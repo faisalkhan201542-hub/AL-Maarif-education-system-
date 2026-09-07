@@ -41,7 +41,10 @@ export default function TeacherList() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-800">Teachers</h1>
-        <button className="btn-primary" onClick={() => navigate("/teachers/new")}><Plus size={16}/> Add Teacher</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => window.print()} className="btn-secondary no-print">Print PDF</button>
+          <button className="btn-primary" onClick={() => navigate("/teachers/new")}><Plus size={16}/> Add Teacher</button>
+        </div>
       </div>
 
       <div className="card">

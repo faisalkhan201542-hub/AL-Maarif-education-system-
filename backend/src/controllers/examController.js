@@ -1,5 +1,6 @@
 import Exam from "../models/Exam.js";
 import Result from "../models/Result.js";
+import Subject from "../models/Subject.js";
 import { SUBJECTS_BY_CLASS } from "../utils/constants.js";
 
 // @route GET /api/exams
@@ -23,11 +24,17 @@ export const createExam = async (req, res) => {
   const { title, examType, class: className, subjects, totalMarksPerSubject, examDate, academicYear } = req.body;
   if (!title || !className) return res.status(400).json({ message: "title and class are required" });
 
+  let assignedSubjects = subjects && subjects.length ? subjects : [];
+  if (assignedSubjects.length === 0) {
+    const dbSubjects = await Subject.find({ class: className });
+    assignedSubjects = dbSubjects.map(s => s.name);
+  }
+
   const exam = await Exam.create({
     title,
     examType,
     class: className,
-    subjects: subjects && subjects.length ? subjects : SUBJECTS_BY_CLASS[className] || [],
+    subjects: assignedSubjects,
     totalMarksPerSubject: totalMarksPerSubject || 100,
     examDate,
     academicYear,
