@@ -3,6 +3,7 @@ import Student from "../models/Student.js";
 import SchoolSettings from "../models/SchoolSettings.js";
 import { generateChallanNumber, generateReceiptNumber } from "../utils/idGenerators.js";
 import { buildWhatsappLink } from "../utils/whatsapp.js";
+import Announcement from "../models/Announcement.js";
 
 // @desc List challans with filters, pagination
 // @route GET /api/fees
@@ -152,7 +153,7 @@ export const updateChallan = async (req, res) => {
 // @route PUT /api/fees/:id/record-payment
 export const recordPayment = async (req, res) => {
   const { paidAmount, transactionReference, paymentDate } = req.body;
-  const challan = await FeeChallan.findById(req.params.id);
+  const challan = await FeeChallan.findById(req.params.id).populate("student");
   if (!challan) return res.status(404).json({ message: "Challan not found" });
 
   challan.paidAmount = Number(paidAmount) || challan.paidAmount;
@@ -165,6 +166,15 @@ export const recordPayment = async (req, res) => {
   }
 
   await challan.save();
+
+  // Create an announcement automatically
+  await Announcement.create({
+    title: `Fee Submitted - ${challan.student.name}`,
+    description: `Student ${challan.student.name} (${challan.student.registrationNumber}) has submitted Rs. ${challan.paidAmount}. The remaining amount is Rs. ${challan.remainingAmount}.`,
+    type: "Fee",
+    priority: "Normal"
+  });
+
   res.json(challan);
 };
 

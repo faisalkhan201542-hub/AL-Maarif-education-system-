@@ -261,6 +261,8 @@ async function run() {
 
   // ---------- Exams & Results ----------
   const exams = [];
+  const terms = ["Mid Term", "Final Term"];
+
   for (const className of CLASSES) {
     const exam = await Exam.create({
       title: `Monthly Test - ${className}`,
@@ -272,8 +274,23 @@ async function run() {
       academicYear: String(YEAR),
     });
     exams.push(exam);
+
+    // Create Term Exams without Results for manual entry
+    for (let i = 0; i < terms.length; i++) {
+      const termDate = new Date();
+      termDate.setMonth(termDate.getMonth() + (i + 1) * 3);
+      await Exam.create({
+        title: `${terms[i]} - ${className}`,
+        examType: terms[i],
+        class: className,
+        subjects: SUBJECTS_BY_CLASS[className],
+        totalMarksPerSubject: 100,
+        examDate: termDate,
+        academicYear: String(YEAR),
+      });
+    }
   }
-  console.log(`Created ${exams.length} exams.`);
+  console.log(`Created ${exams.length} Monthly tests and ${terms.length * CLASSES.length} Term exams.`);
 
   for (const exam of exams) {
     const classStudents = createdStudents.filter((s) => s.class === exam.class);

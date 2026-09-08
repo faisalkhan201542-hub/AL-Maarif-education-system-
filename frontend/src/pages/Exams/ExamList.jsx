@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Plus, Trash2, Award } from "lucide-react";
+import { Plus, Trash2, Award, Calendar, BookOpen, Layers } from "lucide-react";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
 import EmptyState from "../../components/EmptyState.jsx";
@@ -51,21 +51,49 @@ export default function ExamList() {
     }
   };
 
+  const getStatusBadge = (dateString) => {
+    if (!dateString) return <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-semibold">TBD</span>;
+    const examDate = new Date(dateString);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    if (examDate > today) return <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold border border-blue-200">Upcoming</span>;
+    if (examDate.getTime() === today.getTime()) return <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-xs font-semibold border border-amber-200">Today</span>;
+    return <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-xs font-semibold border border-emerald-200">Completed</span>;
+  };
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-gray-800">Examinations</h1>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}><Plus size={16}/> Create Exam</button>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Examinations</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage all class exams, types, and schedules</p>
+        </div>
+        <button className="btn-primary shadow-sm hover:shadow-md transition-shadow" onClick={() => setShowForm(!showForm)}>
+          <Plus size={18} className="mr-1"/> {showForm ? "Close Form" : "Create Exam"}
+        </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleCreate} className="card grid sm:grid-cols-2 gap-4">
-          <div><label className="label">Title *</label><input required className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+        <form onSubmit={handleCreate} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm grid sm:grid-cols-2 gap-5 animate-in slide-in-from-top-2">
+          <div className="sm:col-span-2 border-b border-slate-100 pb-2 mb-2">
+            <h2 className="text-lg font-semibold text-slate-700">New Exam Setup</h2>
+          </div>
+          <div>
+            <label className="label">Exam Title *</label>
+            <div className="relative">
+              <BookOpen className="absolute left-3 top-2.5 text-slate-400" size={18}/>
+              <input required className="input pl-10" placeholder="e.g. Mid Term 2026" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            </div>
+          </div>
           <div>
             <label className="label">Exam Type</label>
-            <select className="input" value={form.examType} onChange={(e) => setForm({ ...form, examType: e.target.value })}>
-              {EXAM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
+            <div className="relative">
+              <Layers className="absolute left-3 top-2.5 text-slate-400" size={18}/>
+              <select className="input pl-10" value={form.examType} onChange={(e) => setForm({ ...form, examType: e.target.value })}>
+                {EXAM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
           </div>
           <div>
             <label className="label">Class *</label>
@@ -73,35 +101,59 @@ export default function ExamList() {
               {CLASSES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-          <div><label className="label">Exam Date</label><input type="date" className="input" value={form.examDate} onChange={(e) => setForm({ ...form, examDate: e.target.value })} /></div>
-          <div className="sm:col-span-2 flex justify-end gap-2">
+          <div>
+            <label className="label">Exam Date</label>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-2.5 text-slate-400" size={18}/>
+              <input type="date" className="input pl-10" value={form.examDate} onChange={(e) => setForm({ ...form, examDate: e.target.value })} />
+            </div>
+          </div>
+          <div className="sm:col-span-2 flex justify-end gap-3 mt-2">
             <button type="button" className="btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
-            <button type="submit" className="btn-primary">Create</button>
+            <button type="submit" className="btn-primary">Create Exam</button>
           </div>
         </form>
       )}
 
-      <div className="card overflow-x-auto p-0">
-        {loading ? <Loader /> : exams.length === 0 ? <EmptyState title="No exams created yet" icon={Award} /> : (
-          <table className="table-base">
-            <thead><tr><th className="th">Title</th><th className="th">Type</th><th className="th">Class</th><th className="th">Date</th><th className="th">Actions</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
-              {exams.map((e) => (
-                <tr key={e._id} className="hover:bg-gray-50">
-                  <td className="td font-medium">{e.title}</td>
-                  <td className="td">{e.examType}</td>
-                  <td className="td">{e.class}</td>
-                  <td className="td">{fmtDate(e.examDate)}</td>
-                  <td className="td">
-                    <div className="flex gap-1.5">
-                      <Link to={`/exams/${e._id}/results`} className="btn-secondary btn-sm">Enter Marks</Link>
-                      <button className="btn-danger btn-sm" onClick={() => setDeleteTarget(e)}><Trash2 size={14}/></button>
-                    </div>
-                  </td>
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {loading ? <div className="p-8"><Loader /></div> : exams.length === 0 ? <div className="p-8"><EmptyState title="No exams created yet" icon={Award} /></div> : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-600">
+              <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+                <tr>
+                  <th className="px-5 py-4">Title</th>
+                  <th className="px-5 py-4">Type</th>
+                  <th className="px-5 py-4">Class</th>
+                  <th className="px-5 py-4">Date</th>
+                  <th className="px-5 py-4">Status</th>
+                  <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {exams.map((e) => (
+                  <tr key={e._id} className="hover:bg-slate-50 transition-colors group">
+                    <td className="px-5 py-4 font-bold text-slate-800">{e.title}</td>
+                    <td className="px-5 py-4">
+                      <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs border border-slate-200">{e.examType}</span>
+                    </td>
+                    <td className="px-5 py-4 font-bold text-primary-700">{e.class}</td>
+                    <td className="px-5 py-4 text-slate-500 font-medium">{e.examDate ? fmtDate(e.examDate) : "-"}</td>
+                    <td className="px-5 py-4">
+                      {getStatusBadge(e.examDate)}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <Link to={`/exams/${e._id}/results`} className="btn-secondary btn-sm bg-white border border-slate-300 shadow-sm hover:bg-slate-50 text-slate-700">Enter Marks</Link>
+                        <button className="btn-danger btn-sm opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteTarget(e)}>
+                          <Trash2 size={16}/>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

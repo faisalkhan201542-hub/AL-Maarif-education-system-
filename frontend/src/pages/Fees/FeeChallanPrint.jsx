@@ -95,11 +95,15 @@ export default function FeeChallanPrint() {
         <div className="border-2 border-dashed border-gold-400 rounded-lg p-4 mb-4 bg-gold-50">
           <h3 className="font-bold text-gold-700 mb-2">EASYPAISA PAYMENT</h3>
           <p className="text-sm">Pay Your School Fee Through EasyPaisa</p>
-          <p className="text-sm mt-1"><span className="text-gray-500">EasyPaisa Number: </span><span className="font-mono font-bold">{settings?.easypaisaNumber}</span></p>
-          <p className="text-sm"><span className="text-gray-500">Account Name: </span>{settings?.easypaisaAccountName}</p>
-          <div className="grid grid-cols-2 gap-4 mt-3 text-sm">
-            <p><span className="text-gray-500">Transaction Reference No: </span>{challan.transactionReference || "___________________"}</p>
-            <p><span className="text-gray-500">Payment Date: </span>{challan.paymentDate ? fmtDate(challan.paymentDate) : "___________________"}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <div>
+              <p className="text-sm"><span className="text-gray-500">EasyPaisa Number: </span><span className="font-mono font-bold text-base">{settings?.easypaisaNumber}</span></p>
+              <p className="text-sm mt-1"><span className="text-gray-500">Account Name: </span>{settings?.easypaisaAccountName}</p>
+            </div>
+            <div className="text-sm">
+              <p><span className="text-gray-500">Transaction Reference No: </span>{challan.transactionReference || "___________________"}</p>
+              <p className="mt-1"><span className="text-gray-500">Payment Date: </span>{challan.paymentDate ? fmtDate(challan.paymentDate) : "___________________"}</p>
+            </div>
           </div>
         </div>
 

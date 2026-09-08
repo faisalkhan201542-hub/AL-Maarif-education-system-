@@ -48,6 +48,7 @@ export const getDashboardStats = async (req, res) => {
     totalClasses: CLASSES.length,
     todayPresent,
     todayAbsent,
+    todayAbsentFine: todayAbsent * 50,
     pendingFees: pendingFeeAgg[0]?.total || 0,
     collectedFees: collectedFeeAgg[0]?.total || 0,
     genderStats: { boys: boysCount, girls: girlsCount },

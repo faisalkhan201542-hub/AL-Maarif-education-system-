@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
+import { useSettings } from "../../context/SettingsContext.jsx";
 import { CHALLAN_TYPES } from "../../utils/constants.js";
 
 const emptyForm = {
@@ -32,15 +33,21 @@ export default function FeeChallanForm() {
   const [paidAmount, setPaidAmount] = useState("");
   const [txnRef, setTxnRef] = useState("");
 
+  const { settings } = useSettings();
+
   useEffect(() => {
     const preselect = searchParams.get("student");
-    if (preselect) {
+    if (preselect && settings) {
       api.get(`/api/students/${preselect}`).then((res) => {
         setSelectedStudent(res.data);
-        setForm((f) => ({ ...f, student: res.data._id }));
+        setForm((f) => ({ 
+          ...f, 
+          student: res.data._id,
+          feeAmount: settings?.feeStructure?.[res.data.class] || f.feeAmount
+        }));
       });
     }
-  }, [searchParams]);
+  }, [searchParams, settings]);
 
   useEffect(() => {
     if (isEdit) {
@@ -79,7 +86,11 @@ export default function FeeChallanForm() {
 
   const handleSelectStudent = (s) => {
     setSelectedStudent(s);
-    setForm({ ...form, student: s._id });
+    setForm({ 
+      ...form, 
+      student: s._id,
+      feeAmount: settings?.feeStructure?.[s.class] || ""
+    });
     setStudents([]);
     setStudentSearch("");
   };

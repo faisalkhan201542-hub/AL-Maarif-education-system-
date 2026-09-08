@@ -1,5 +1,6 @@
 import Attendance from "../models/Attendance.js";
 import Student from "../models/Student.js";
+import FeeChallan from "../models/FeeChallan.js";
 
 // @desc Get attendance for a class + date
 // @route GET /api/attendance?class=KG&date=2026-01-05
@@ -38,15 +39,42 @@ export const markBulkAttendance = async (req, res) => {
   const day = new Date(date);
   day.setHours(0, 0, 0, 0);
 
-  const ops = records.map((r) => ({
-    updateOne: {
-      filter: { student: r.studentId, date: day },
-      update: { $set: { student: r.studentId, class: className, date: day, status: r.status, markedBy: "Principal" } },
-      upsert: true,
-    },
-  }));
+  const existingRecords = await Attendance.find({ date: day, class: className });
+  const ops = [];
+  const absentStudentIds = [];
 
-  if (ops.length > 0) await Attendance.bulkWrite(ops);
+  records.forEach((r) => {
+    const existing = existingRecords.find(e => String(e.student) === String(r.studentId));
+
+    ops.push({
+      updateOne: {
+        filter: { student: r.studentId, date: day },
+        update: { $set: { student: r.studentId, class: className, date: day, status: r.status, markedBy: "Principal" } },
+        upsert: true,
+      },
+    });
+
+    // Only apply fine if they were not already absent today
+    if (r.status === "Absent" && (!existing || existing.status !== "Absent")) {
+      absentStudentIds.push(r.studentId);
+    }
+  });
+
+  if (ops.length > 0) {
+    await Attendance.bulkWrite(ops);
+  }
+
+  // Apply Rs. 50 fine to the current month's fee challan for new absentees
+  if (absentStudentIds.length > 0) {
+    const monthLabel = day.toLocaleString("en-US", { month: "long", year: "numeric" });
+    const challans = await FeeChallan.find({ student: { $in: absentStudentIds }, billingMonth: monthLabel });
+    
+    for (const challan of challans) {
+      challan.fine = (challan.fine || 0) + 50;
+      await challan.save(); // Save triggers pre-validate to update totalAmount
+    }
+  }
+
   res.json({ message: "Attendance saved successfully" });
 };
 

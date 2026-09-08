@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Users, UserCog, School, CalendarCheck, CalendarX, Wallet, Coins, Megaphone } from "lucide-react";
+import { GraduationCap, Briefcase, Building, CalendarCheck2, CalendarOff, CreditCard, Banknote, BellRing } from "lucide-react";
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import api from "../api/axios.js";
 import StatCard from "../components/StatCard.jsx";
@@ -36,14 +36,31 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total Students" value={data.totalStudents} icon={Users} tone="primary" />
-        <StatCard label="Total Teachers" value={data.totalTeachers} icon={UserCog} tone="gold" />
-        <StatCard label="Total Classes" value={data.totalClasses} icon={School} tone="blue" />
-        <StatCard label="Today's Present" value={data.todayPresent} icon={CalendarCheck} tone="primary" />
-        <StatCard label="Today's Absent" value={data.todayAbsent} icon={CalendarX} tone="red" />
-        <StatCard label="Pending Fees" value={fmtMoney(data.pendingFees)} icon={Wallet} tone="red" />
-        <StatCard label="Collected Fees" value={fmtMoney(data.collectedFees)} icon={Coins} tone="gold" />
-        <StatCard label="Announcements" value={data.announcements.length} icon={Megaphone} tone="blue" />
+        <StatCard label="Total Students" value={data.totalStudents} icon={GraduationCap} tone="primary" />
+        <StatCard label="Total Teachers" value={data.totalTeachers} icon={Briefcase} tone="gold" />
+        <StatCard label="Total Classes" value={data.totalClasses} icon={Building} tone="blue" />
+        <StatCard label="Today's Present" value={data.todayPresent} icon={CalendarCheck2} tone="primary" />
+        <StatCard label="Today's Absent" value={data.todayAbsent} icon={CalendarOff} tone="red" />
+        <StatCard label="Pending Fees" value={fmtMoney(data.pendingFees)} icon={CreditCard} tone="red" />
+        <StatCard label="Collected Fees" value={fmtMoney(data.collectedFees)} icon={Banknote} tone="gold" />
+        <StatCard label="Announcements" value={data.announcements.length} icon={BellRing} tone="blue" />
+      </div>
+
+      <div className="bg-red-50 border border-red-100 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+        <div>
+          <h2 className="text-lg font-bold text-red-800 flex items-center gap-2"><CalendarOff size={20}/> Daily Absentee & Fine Report</h2>
+          <p className="text-sm text-red-600 mt-1">Overview of today's absentees and automatically generated fines.</p>
+        </div>
+        <div className="flex gap-8">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">Total Absentees</p>
+            <p className="text-3xl font-extrabold text-red-700">{data.todayAbsent}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">Fine Generated</p>
+            <p className="text-3xl font-extrabold text-red-700">{fmtMoney(data.todayAbsentFine)}</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
