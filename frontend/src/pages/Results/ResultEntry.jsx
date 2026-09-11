@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { Save, FileText, CheckCircle2, ArrowLeft, PenTool } from "lucide-react";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
+import PageHeader from "../../components/PageHeader.jsx";
+import ExportButtons from "../../components/ExportButtons.jsx";
 
 export default function ResultEntry() {
   const { examId } = useParams();
@@ -61,29 +63,50 @@ export default function ResultEntry() {
 
   if (loading || !exam) return <Loader />;
 
+  const exportData = students.map(st => {
+    const row = { rollNumber: st.rollNumber, name: st.name };
+    exam.subjects.forEach(sub => {
+      row[sub] = results[st._id]?.[sub] !== undefined ? results[st._id][sub] : "-";
+    });
+    return row;
+  });
+
+  const exportColumns = [
+    { header: "Roll No", key: "rollNumber" },
+    { header: "Name", key: "name" },
+    ...exam.subjects.map(sub => ({ header: sub, key: sub }))
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link to="/exams" className="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors">
-            <ArrowLeft size={20} />
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-              <PenTool className="text-primary-600" size={24} /> 
-              {exam.title}
-            </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Class <span className="font-semibold text-slate-700">{exam.class}</span> • Enter marks per subject (out of {exam.totalMarksPerSubject})
-            </p>
+      <PageHeader 
+        title={
+          <span className="flex items-center gap-2">
+            <PenTool className="text-white/80" size={24} /> 
+            {exam.title}
+          </span>
+        }
+        subtitle={`Class ${exam.class} • Enter marks per subject (out of ${exam.totalMarksPerSubject})`}
+        className="from-rose-500 via-red-500 to-orange-500"
+        rightElement={
+          <div className="flex items-center gap-2">
+            <ExportButtons 
+              data={exportData} 
+              columns={exportColumns} 
+              title={`Exam Results - ${exam.title} (Class ${exam.class})`} 
+              filename={`Results_${exam.title.replace(/\s+/g, '_')}_Class${exam.class}`} 
+            />
+            <Link to="/exams" className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg shadow-sm font-bold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto">
+              <ArrowLeft size={16} /> Back to Exams
+            </Link>
           </div>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+          <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400 dark:text-slate-500">
+            <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th className="px-5 py-4 w-20">Roll No</th>
                 <th className="px-5 py-4">Student</th>
@@ -92,15 +115,15 @@ export default function ResultEntry() {
                 <th className="px-5 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
               {students.map((st) => {
                 const isSaved = !!existingResults[st._id];
                 return (
-                  <tr key={st._id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-5 py-3 font-mono text-slate-500">{st.rollNumber}</td>
-                    <td className="px-5 py-3 font-medium text-slate-800">
+                  <tr key={st._id} className="hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="px-5 py-3 font-mono text-slate-500 dark:text-slate-400 dark:text-slate-500">{st.rollNumber}</td>
+                    <td className="px-5 py-3 font-medium text-slate-800 dark:text-slate-100">
                       <div className="flex items-center gap-3">
-                        {st.photoUrl && <img src={st.photoUrl.startsWith('http') ? st.photoUrl : `http://localhost:5000${st.photoUrl}`} className="w-8 h-8 rounded-full object-cover border border-slate-200" alt="" />}
+                        {st.photoUrl && <img src={st.photoUrl.startsWith('http') ? st.photoUrl : `http://localhost:5000${st.photoUrl}`} className="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700" alt="" />}
                         {st.name}
                       </div>
                     </td>
@@ -110,7 +133,7 @@ export default function ResultEntry() {
                           type="number"
                           min={0}
                           max={exam.totalMarksPerSubject}
-                          className="w-20 px-3 py-1.5 text-center bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-all font-medium text-slate-700"
+                          className="w-20 px-3 py-1.5 text-center bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-md focus:bg-white dark:bg-slate-800 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition-all font-medium text-slate-700 dark:text-slate-300"
                           value={results[st._id]?.[subject] ?? ""}
                           onChange={(e) => handleMarkChange(st._id, subject, e.target.value)}
                         />
@@ -122,7 +145,7 @@ export default function ResultEntry() {
                           <CheckCircle2 size={12} /> Saved
                         </span>
                       ) : (
-                        <span className="text-xs font-semibold text-slate-400">Pending</span>
+                        <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">Pending</span>
                       )}
                     </td>
                     <td className="px-5 py-3 text-right">
@@ -135,7 +158,7 @@ export default function ResultEntry() {
                           <Save size={14} /> {savingId === st._id ? "Saving..." : "Save"}
                         </button>
                         {isSaved && (
-                          <Link to={`/results/${existingResults[st._id]}`} className="btn-secondary btn-sm px-3 flex items-center gap-1 border-slate-300 text-slate-700 hover:bg-slate-100 bg-white">
+                          <Link to={`/results/${existingResults[st._id]}`} className="btn-secondary btn-sm px-3 flex items-center gap-1 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:bg-slate-800 bg-white dark:bg-slate-800">
                             <FileText size={14} /> View
                           </Link>
                         )}

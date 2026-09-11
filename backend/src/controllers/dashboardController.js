@@ -7,18 +7,19 @@ import Announcement from "../models/Announcement.js";
 import { CLASSES } from "../utils/constants.js";
 
 export const getDashboardStats = async (req, res) => {
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const todayString = startOfToday.toISOString().split("T")[0];
+  const now = new Date();
+  const todayString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  
+  const startOfToday = new Date(todayString);
 
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
   sixMonthsAgo.setDate(1);
   sixMonthsAgo.setHours(0, 0, 0, 0);
 
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(startOfToday.getDate() - 6);
-  sevenDaysAgo.setHours(0, 0, 0, 0);
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(startOfToday.getDate() - 29);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
 
   const [
     totalStudents,
@@ -71,7 +72,7 @@ export const getDashboardStats = async (req, res) => {
       { $sort: { _id: 1 } }
     ]),
     Attendance.aggregate([
-      { $match: { date: { $gte: sevenDaysAgo } } },
+      { $match: { date: { $gte: thirtyDaysAgo } } },
       { $group: {
           _id: "$dateString",
           present: { $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] } },

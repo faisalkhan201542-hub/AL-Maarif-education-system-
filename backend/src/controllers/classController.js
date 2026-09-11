@@ -29,8 +29,8 @@ export const getClassDetail = async (req, res) => {
   const students = await Student.find({ class: className }).sort({ rollNumber: 1 });
   const studentIds = students.map((s) => s._id);
 
-  const startOfToday = new Date();
-  const todayString = startOfToday.toISOString().split("T")[0];
+  const now = new Date();
+  const todayString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   const [todayAttendance, pendingChallans, results, teacher] = await Promise.all([
     Attendance.find({ student: { $in: studentIds }, dateString: todayString }),

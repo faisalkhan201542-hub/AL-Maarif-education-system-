@@ -38,11 +38,11 @@ export default function StudentProfile() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="card print-area">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          <img src={photo} alt={student.name} className="w-24 h-24 rounded-xl object-cover bg-gray-100 border" />
+          <img src={photo} alt={student.name} className="w-24 h-24 rounded-xl object-cover bg-slate-100 dark:bg-slate-800 border" />
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-800">{student.name}</h1>
-            <p className="text-sm text-gray-500">Registration No: <span className="font-mono">{student.registrationNumber}</span></p>
-            <p className="text-sm text-gray-500">Class {student.class} • Roll No {student.rollNumber}</p>
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{student.name}</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Registration No: <span className="font-mono">{student.registrationNumber}</span></p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Class {student.class} • Roll No {student.rollNumber}</p>
             <span className={statusBadgeClass(student.status)}>{student.status}</span>
           </div>
           <div className="flex flex-wrap gap-2 no-print">
@@ -50,17 +50,17 @@ export default function StudentProfile() {
             <button className="btn-danger btn-sm" onClick={() => setConfirmDelete(true)}><Trash2 size={14}/> Delete</button>
             <button className="btn-secondary btn-sm" onClick={() => window.print()}><Printer size={14}/> Print</button>
             <Link to={`/students/${id}/id-card`} className="btn-gold btn-sm"><CreditCard size={14}/> Student Card</Link>
-            <WhatsAppButton phone={student.fatherWhatsapp} message={`Assalam-o-Alaikum, this is regarding your child ${student.name} at Al-Maarif Education.`} label="WhatsApp Father" />
+            <WhatsAppButton phone={student.fatherWhatsapp} message={`Assalam-o-Alaikum!\nMohtaram Walidain, ye paigham Al-Maarif Education ki janib se aap ke bache ${student.name} ke mutaliq hai.`} label="WhatsApp Father" />
           </div>
         </div>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6 text-sm">
-          <div><p className="text-gray-400">Father Name</p><p className="font-medium">{student.fatherName}</p></div>
-          <div><p className="text-gray-400">Father WhatsApp</p><p className="font-medium">{student.fatherWhatsapp}</p></div>
-          <div><p className="text-gray-400">Gender</p><p className="font-medium">{student.gender}</p></div>
-          <div><p className="text-gray-400">Date of Birth</p><p className="font-medium">{fmtDate(student.dob)}</p></div>
-          <div><p className="text-gray-400">Admission Date</p><p className="font-medium">{fmtDate(student.admissionDate)}</p></div>
-          <div><p className="text-gray-400">Address</p><p className="font-medium">{student.address || "-"}</p></div>
+          <div><p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Father Name</p><p className="font-medium">{student.fatherName}</p></div>
+          <div><p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Father WhatsApp</p><p className="font-medium">{student.fatherWhatsapp}</p></div>
+          <div><p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Gender</p><p className="font-medium">{student.gender}</p></div>
+          <div><p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Date of Birth</p><p className="font-medium">{fmtDate(student.dob)}</p></div>
+          <div><p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Admission Date</p><p className="font-medium">{fmtDate(student.admissionDate)}</p></div>
+          <div><p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Address</p><p className="font-medium">{student.address || "-"}</p></div>
         </div>
       </div>
 
@@ -68,29 +68,29 @@ export default function StudentProfile() {
         <div className="card">
           <div className="flex items-center gap-2 text-primary-700 font-semibold mb-2"><CalendarCheck size={18}/> Attendance</div>
           <p className="text-2xl font-bold">{attendance.attendancePercentage}%</p>
-          <p className="text-xs text-gray-400">{attendance.present} present / {attendance.absent} absent / {attendance.leave} leave (last {attendance.records.length} days)</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">{attendance.present} present / {attendance.absent} absent / {attendance.leave} leave (last {attendance.records.length} days)</p>
         </div>
         <div className="card">
           <div className="flex items-center gap-2 text-gold-600 font-semibold mb-2"><Wallet size={18}/> Fees</div>
           <p className="text-2xl font-bold">{fmtMoney(fees.pendingFees)}</p>
-          <p className="text-xs text-gray-400">Pending across {fees.challans.length} challan(s)</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Pending across {fees.challans.length} challan(s)</p>
           <Link to={`/fees/new?student=${id}`} className="text-xs text-primary-700 hover:underline mt-1 inline-block no-print">Generate Fee Challan →</Link>
         </div>
         <div className="card">
           <div className="flex items-center gap-2 text-blue-600 font-semibold mb-2"><Award size={18}/> Results</div>
           <p className="text-2xl font-bold">{results.length}</p>
-          <p className="text-xs text-gray-400">Exam result(s) recorded</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Exam result(s) recorded</p>
         </div>
       </div>
 
       <div className="card overflow-x-auto">
-        <h2 className="font-semibold text-gray-700 mb-3">Fee Challans</h2>
+        <h2 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">Fee Challans</h2>
         {fees.challans.length === 0 ? (
-          <p className="text-sm text-gray-400">No fee challans generated yet.</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">No fee challans generated yet.</p>
         ) : (
           <table className="table-base">
             <thead><tr><th className="th">Challan No</th><th className="th">Month</th><th className="th">Total</th><th className="th">Paid</th><th className="th">Status</th><th className="th">Verification</th><th className="th">Actions</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
               {fees.challans.map((c) => (
                 <tr key={c._id}>
                   <td className="td font-mono text-xs">{c.challanNumber}</td>
@@ -108,13 +108,13 @@ export default function StudentProfile() {
       </div>
 
       <div className="card overflow-x-auto">
-        <h2 className="font-semibold text-gray-700 mb-3">Results</h2>
+        <h2 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">Results</h2>
         {results.length === 0 ? (
-          <p className="text-sm text-gray-400">No results recorded yet.</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">No results recorded yet.</p>
         ) : (
           <table className="table-base">
             <thead><tr><th className="th">Exam</th><th className="th">Percentage</th><th className="th">Grade</th><th className="th">Status</th><th className="th">Position</th><th className="th">Actions</th></tr></thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
               {results.map((r) => (
                 <tr key={r._id}>
                   <td className="td">{r.exam?.title}</td>

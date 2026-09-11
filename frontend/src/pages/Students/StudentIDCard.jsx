@@ -36,13 +36,13 @@ export default function StudentIDCard() {
             <p className="font-bold mt-1 text-center">{settings?.schoolName || "Al-Maarif Education"}</p>
             <p className="text-xs text-primary-200">Student ID Card</p>
           </div>
-          <div className="bg-white p-4 flex flex-col items-center">
-            <img src={photo} alt={student.name} className="w-24 h-24 rounded-full object-cover border-4 border-gold-400 -mt-14 bg-white" />
+          <div className="bg-white dark:bg-slate-800 p-4 flex flex-col items-center">
+            <img src={photo} alt={student.name} className="w-24 h-24 rounded-full object-cover border-4 border-gold-400 -mt-14 bg-white dark:bg-slate-800" />
             <h2 className="font-bold text-lg mt-2 text-center">{student.name}</h2>
-            <p className="text-sm text-gray-500 font-mono">{student.registrationNumber}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 font-mono">{student.registrationNumber}</p>
             <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm mt-3 w-full">
-              <p className="text-gray-400">Class</p><p className="text-right font-medium">{student.class}</p>
-              <p className="text-gray-400">Roll No</p><p className="text-right font-medium">{student.rollNumber}</p>
+              <p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Class</p><p className="text-right font-medium">{student.class}</p>
+              <p className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Roll No</p><p className="text-right font-medium">{student.rollNumber}</p>
             </div>
           </div>
         </div>
@@ -50,14 +50,14 @@ export default function StudentIDCard() {
         {/* BACK */}
         <div className="w-80 rounded-2xl overflow-hidden shadow-lg border-2 border-primary-700 flex flex-col">
           <div className="bg-primary-900 text-white p-4 text-center font-bold">Student Information</div>
-          <div className="bg-white p-5 flex-1 text-sm space-y-2">
-            <p><span className="text-gray-400">Father Name: </span>{student.fatherName}</p>
-            <p><span className="text-gray-400">Father WhatsApp: </span>{student.fatherWhatsapp}</p>
-            <p><span className="text-gray-400">School Address: </span>{settings?.address}</p>
-            <p><span className="text-gray-400">Principal: </span>{settings?.principalName}</p>
-            <p><span className="text-gray-400">Contact: </span>{settings?.principalWhatsapp}</p>
+          <div className="bg-white dark:bg-slate-800 p-5 flex-1 text-sm space-y-2">
+            <p><span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Father Name: </span>{student.fatherName}</p>
+            <p><span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Father WhatsApp: </span>{student.fatherWhatsapp}</p>
+            <p><span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">School Address: </span>{settings?.address}</p>
+            <p><span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Principal: </span>{settings?.principalName}</p>
+            <p><span className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Contact: </span>{settings?.principalWhatsapp}</p>
           </div>
-          <div className="bg-gray-50 text-center text-xs text-gray-400 py-2">If found, please return to Al-Maarif Education.</div>
+          <div className="bg-slate-50 dark:bg-slate-800/50 text-center text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 py-2">If found, please return to Al-Maarif Education.</div>
         </div>
       </div>
     </div>

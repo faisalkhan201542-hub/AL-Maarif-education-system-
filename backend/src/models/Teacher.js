@@ -10,6 +10,7 @@ const teacherSchema = new mongoose.Schema(
     whatsapp: { type: String, required: true },
     qualification: { type: String, default: "" },
     subject: { type: String, default: "" },
+    baseSalary: { type: Number, default: 0 },
     joiningDate: { type: Date, default: Date.now },
     assignedClass: { type: String, enum: [...CLASSES, ""], default: "" },
     status: { type: String, enum: TEACHER_STATUS, default: "Active" },

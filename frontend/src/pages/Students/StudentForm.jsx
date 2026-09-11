@@ -79,11 +79,11 @@ export default function StudentForm() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">{isEdit ? "Edit Student" : "Add Student"}</h1>
+      <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{isEdit ? "Edit Student" : "Add Student"}</h1>
 
       <form onSubmit={handleSubmit} className="card space-y-5">
         <div className="flex items-center gap-4">
-          <img src={preview || "https://api.dicebear.com/7.x/adventurer/svg?seed=new"} alt="preview" className="w-20 h-20 rounded-full object-cover bg-gray-100 border" />
+          <img src={preview || "https://api.dicebear.com/7.x/adventurer/svg?seed=new"} alt="preview" className="w-20 h-20 rounded-full object-cover bg-slate-100 dark:bg-slate-800 border" />
           <div>
             <label className="label">Student Photo</label>
             <input type="file" accept="image/*" onChange={handlePhoto} className="text-sm" />

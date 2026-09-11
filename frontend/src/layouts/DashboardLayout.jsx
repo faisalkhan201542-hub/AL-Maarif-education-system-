@@ -7,7 +7,7 @@ export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-50">
+    <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors">
       {/* Desktop sidebar */}
       <div className="hidden md:block">
         <Sidebar />

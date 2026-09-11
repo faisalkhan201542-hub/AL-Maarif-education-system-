@@ -1,7 +1,9 @@
 import { NavLink } from "react-router-dom";
 import {
-  Gauge, GraduationCap, Building, Briefcase, CalendarCheck2, CreditCard,
-  ScrollText, BookOpen, Clock, BellRing, TrendingUp, Award, MapPin, Settings, LogOut, Building2
+  Gauge, GraduationCap, Building, Briefcase, CalendarCheck,
+  CreditCard,
+  ReceiptText,
+  FileText, BookOpen, Clock, BellRing, TrendingUp, Award, MapPin, Settings, LogOut, Building2, MessageSquare, Banknote, Calculator
 } from "lucide-react";
 import Logo from "./Logo.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -11,12 +13,16 @@ const links = [
   { to: "/students", label: "Students", icon: GraduationCap },
   { to: "/classes", label: "Classes", icon: Building },
   { to: "/teachers", label: "Teachers", icon: Briefcase },
-  { to: "/attendance", label: "Attendance", icon: CalendarCheck2 },
+  { to: "/payroll", label: "Payroll & Salary", icon: Banknote },
+  { to: "/attendance", label: "Attendance", icon: CalendarCheck },
   { to: "/fees", label: "Fees / Challans", icon: CreditCard },
-  { to: "/exams", label: "Examinations", icon: ScrollText },
+  { to: "/expenses", label: "Expenses", icon: ReceiptText },
+  { to: "/accounting", label: "Accounting & Khata", icon: Calculator },
+  { to: "/exams", label: "Examinations", icon: FileText },
   { to: "/subjects", label: "Subjects", icon: BookOpen },
   { to: "/timetable", label: "Timetable", icon: Clock },
   { to: "/announcements", label: "Announcements", icon: BellRing },
+  { to: "/communications", label: "Communications", icon: MessageSquare },
   { to: "/reports", label: "Reports", icon: TrendingUp },
 
   { to: "/location", label: "School Location", icon: MapPin },

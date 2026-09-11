@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { FileSpreadsheet, FileText, Users, CalendarCheck, Wallet, Award, UserCog } from "lucide-react";
 import api from "../../api/axios.js";
 import { CLASSES } from "../../utils/constants.js";
+import PageHeader from "../../components/PageHeader.jsx";
 
 const reportSections = [
   { key: "students", label: "Student Reports", icon: Users, filters: ["class"] },
@@ -37,17 +38,18 @@ export default function Reports() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Reports</h1>
-        <p className="text-sm text-gray-400">Generate and export professional reports (Excel / Word) — Al-Maarif Education</p>
-      </div>
+      <PageHeader 
+        title="Reports"
+        subtitle="Generate and export professional reports (Excel / Word) — Al-Maarif Education"
+        className="from-fuchsia-500 via-pink-500 to-rose-500"
+      />
 
       <div className="grid md:grid-cols-2 gap-4">
         {reportSections.map(({ key, label, icon: Icon, filters: filterFields }) => (
           <div key={key} className="card">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-9 h-9 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center"><Icon size={18}/></div>
-              <h2 className="font-semibold text-gray-700">{label}</h2>
+              <h2 className="font-semibold text-slate-700 dark:text-slate-300">{label}</h2>
             </div>
 
             {filterFields.includes("class") && (

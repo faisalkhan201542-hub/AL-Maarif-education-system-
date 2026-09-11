@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
 import StatCard from "../../components/StatCard.jsx";
+import PageHeader from "../../components/PageHeader.jsx";
 import WhatsAppButton from "../../components/WhatsAppButton.jsx";
 import { fmtMoney } from "../../utils/format.js";
 import { Users, CalendarCheck, CalendarX, Wallet, Award } from "lucide-react";
@@ -22,12 +23,15 @@ export default function ClassDetail() {
   if (!data) return <Loader />;
 
   return (
-    <div className="space-y-5">
-      <button className="btn-secondary btn-sm" onClick={() => navigate("/classes")}><ArrowLeft size={14}/> All Classes</button>
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Class {data.class}</h1>
-        {data.classTeacher && <p className="text-sm text-gray-400">Class Teacher: {data.classTeacher}</p>}
-      </div>
+    <div className="space-y-5 pb-10">
+      <PageHeader 
+        title={`Class ${data.class}`}
+        subtitle={data.classTeacher ? `Class Teacher: ${data.classTeacher}` : ""}
+        className="from-[#2c405a] via-[#3d5a80] to-[#4a789c]"
+        rightElement={
+          <button className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg shadow-sm font-bold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto" onClick={() => navigate("/classes")}><ArrowLeft size={16}/> All Classes</button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <StatCard label="Total Students" value={data.totalStudents} icon={Users} />
@@ -38,7 +42,7 @@ export default function ClassDetail() {
       </div>
 
       <div className="card overflow-x-auto">
-        <h2 className="font-semibold text-gray-700 mb-3">Students in Class {data.class}</h2>
+        <h2 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">Students in Class {data.class}</h2>
         <table className="table-base">
           <thead>
             <tr>
@@ -46,9 +50,9 @@ export default function ClassDetail() {
               <th className="th">Father Name</th><th className="th">Father WhatsApp</th><th className="th">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {data.students.map((s) => (
-              <tr key={s._id} className="hover:bg-gray-50">
+              <tr key={s._id} className="hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50">
                 <td className="td"><img src={s.photoUrl?.startsWith("http") ? s.photoUrl : `${API_URL}${s.photoUrl}`} className="w-8 h-8 rounded-full object-cover" alt={s.name} /></td>
                 <td className="td font-mono text-xs">{s.registrationNumber}</td>
                 <td className="td font-medium">{s.name}</td>

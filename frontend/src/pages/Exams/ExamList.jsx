@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Plus, Trash2, Award, Calendar, BookOpen, Layers } from "lucide-react";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
+import PageHeader from "../../components/PageHeader.jsx";
 import EmptyState from "../../components/EmptyState.jsx";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 import { CLASSES, EXAM_TYPES } from "../../utils/constants.js";
@@ -52,7 +53,7 @@ export default function ExamList() {
   };
 
   const getStatusBadge = (dateString) => {
-    if (!dateString) return <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-xs font-semibold">TBD</span>;
+    if (!dateString) return <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded text-xs font-semibold">TBD</span>;
     const examDate = new Date(dateString);
     const today = new Date();
     today.setHours(0,0,0,0);
@@ -64,32 +65,33 @@ export default function ExamList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Examinations</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage all class exams, types, and schedules</p>
-        </div>
-        <button className="btn-primary shadow-sm hover:shadow-md transition-shadow" onClick={() => setShowForm(!showForm)}>
-          <Plus size={18} className="mr-1"/> {showForm ? "Close Form" : "Create Exam"}
-        </button>
-      </div>
+      <PageHeader 
+        title="Examinations"
+        subtitle="Manage all class exams, types, and schedules"
+        className="from-amber-500 via-orange-500 to-red-500"
+        rightElement={
+          <button className="px-4 py-2 bg-white text-amber-600 hover:bg-amber-50 rounded-lg shadow-sm font-bold flex items-center gap-2 transition-colors" onClick={() => setShowForm(!showForm)}>
+            <Plus size={18} className="mr-1"/> {showForm ? "Close Form" : "Create Exam"}
+          </button>
+        }
+      />
 
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm grid sm:grid-cols-2 gap-5 animate-in slide-in-from-top-2">
-          <div className="sm:col-span-2 border-b border-slate-100 pb-2 mb-2">
-            <h2 className="text-lg font-semibold text-slate-700">New Exam Setup</h2>
+        <form onSubmit={handleCreate} className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm grid sm:grid-cols-2 gap-5 animate-in slide-in-from-top-2">
+          <div className="sm:col-span-2 border-b border-slate-100 dark:border-slate-700 pb-2 mb-2">
+            <h2 className="text-lg font-semibold text-slate-700 dark:text-slate-300">New Exam Setup</h2>
           </div>
           <div>
             <label className="label">Exam Title *</label>
             <div className="relative">
-              <BookOpen className="absolute left-3 top-2.5 text-slate-400" size={18}/>
+              <BookOpen className="absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" size={18}/>
               <input required className="input pl-10" placeholder="e.g. Mid Term 2026" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
             </div>
           </div>
           <div>
             <label className="label">Exam Type</label>
             <div className="relative">
-              <Layers className="absolute left-3 top-2.5 text-slate-400" size={18}/>
+              <Layers className="absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" size={18}/>
               <select className="input pl-10" value={form.examType} onChange={(e) => setForm({ ...form, examType: e.target.value })}>
                 {EXAM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
@@ -104,7 +106,7 @@ export default function ExamList() {
           <div>
             <label className="label">Exam Date</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-2.5 text-slate-400" size={18}/>
+              <Calendar className="absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" size={18}/>
               <input type="date" className="input pl-10" value={form.examDate} onChange={(e) => setForm({ ...form, examDate: e.target.value })} />
             </div>
           </div>
@@ -115,11 +117,11 @@ export default function ExamList() {
         </form>
       )}
 
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         {loading ? <div className="p-8"><Loader /></div> : exams.length === 0 ? <div className="p-8"><EmptyState title="No exams created yet" icon={Award} /></div> : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600">
-              <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+            <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400 dark:text-slate-500">
+              <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700">
                 <tr>
                   <th className="px-5 py-4">Title</th>
                   <th className="px-5 py-4">Type</th>
@@ -129,21 +131,21 @@ export default function ExamList() {
                   <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {exams.map((e) => (
-                  <tr key={e._id} className="hover:bg-slate-50 transition-colors group">
-                    <td className="px-5 py-4 font-bold text-slate-800">{e.title}</td>
+                  <tr key={e._id} className="hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 transition-colors group">
+                    <td className="px-5 py-4 font-bold text-slate-800 dark:text-slate-100">{e.title}</td>
                     <td className="px-5 py-4">
-                      <span className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs border border-slate-200">{e.examType}</span>
+                      <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-1 rounded text-xs border border-slate-200 dark:border-slate-700">{e.examType}</span>
                     </td>
                     <td className="px-5 py-4 font-bold text-primary-700">{e.class}</td>
-                    <td className="px-5 py-4 text-slate-500 font-medium">{e.examDate ? fmtDate(e.examDate) : "-"}</td>
+                    <td className="px-5 py-4 text-slate-500 dark:text-slate-400 dark:text-slate-500 font-medium">{e.examDate ? fmtDate(e.examDate) : "-"}</td>
                     <td className="px-5 py-4">
                       {getStatusBadge(e.examDate)}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <Link to={`/exams/${e._id}/results`} className="btn-secondary btn-sm bg-white border border-slate-300 shadow-sm hover:bg-slate-50 text-slate-700">Enter Marks</Link>
+                        <Link to={`/exams/${e._id}/results`} className="btn-secondary btn-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 text-slate-700 dark:text-slate-300">Enter Marks</Link>
                         <button className="btn-danger btn-sm opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDeleteTarget(e)}>
                           <Trash2 size={16}/>
                         </button>

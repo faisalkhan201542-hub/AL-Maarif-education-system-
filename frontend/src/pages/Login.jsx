@@ -33,7 +33,7 @@ export default function Login() {
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-white/10 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-8 md:p-10 border border-white/20">
+        <div className="bg-white/10 dark:bg-slate-800/40 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-8 md:p-10 border border-white/20">
           <div className="flex flex-col items-center mb-8 text-center">
             <div className="mb-6 transform hover:scale-105 transition-transform duration-300">
               <Logo size={72} dark={true} />
@@ -46,7 +46,7 @@ export default function Login() {
             <div>
               <label className="label text-slate-200">WhatsApp Number</label>
               <div className="relative">
-                <Phone size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Phone size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                 <input
                   className="input pl-9 bg-slate-800/50 border-white/10 text-white placeholder-slate-500 focus:bg-slate-800/80 focus:border-primary-400 focus:ring-primary-500/30"
                   placeholder="+923139163732"
@@ -59,7 +59,7 @@ export default function Login() {
             <div>
               <label className="label text-slate-200">Password</label>
               <div className="relative">
-                <Lock size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Lock size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                 <input
                   type="password"
                   className="input pl-9 bg-slate-800/50 border-white/10 text-white placeholder-slate-500 focus:bg-slate-800/80 focus:border-primary-400 focus:ring-primary-500/30"
@@ -75,7 +75,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="text-xs text-slate-400 text-center mt-8 font-medium">
+          <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-8 font-medium">
             Only the Principal (Murad Khalil) can access this system.
           </p>
         </div>

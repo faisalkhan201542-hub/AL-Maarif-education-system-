@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { BookOpen, Plus, Trash2, Edit } from "lucide-react";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
+import PageHeader from "../../components/PageHeader.jsx";
 import toast from "react-hot-toast";
 
 const CLASSES = ["KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
@@ -135,22 +136,22 @@ export default function SubjectList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Subject Management</h1>
-          <p className="text-sm text-gray-400">Manage subjects and automate their timetables</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => window.print()} className="btn-secondary no-print">Print PDF</button>
-          <button onClick={() => openModal()} className="btn-primary flex items-center gap-2">
-            <Plus size={18} /> Add Subject
-          </button>
-        </div>
-      </div>
+      <PageHeader 
+        title="Subject Management"
+        subtitle="Manage subjects and automate their timetables"
+        rightElement={
+          <div className="flex items-center gap-2">
+            <button onClick={() => window.print()} className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white rounded-lg shadow-sm font-medium transition-colors border border-white/20 no-print">Print PDF</button>
+            <button onClick={() => openModal()} className="px-4 py-2 bg-white text-blue-600 hover:bg-blue-50 rounded-lg shadow-sm font-bold flex items-center gap-2 transition-colors">
+              <Plus size={18} /> Add Subject
+            </button>
+          </div>
+        }
+      />
 
       <div className="card">
         <div className="flex items-center gap-2 mb-4">
-          <label className="text-sm font-medium text-gray-600">Select Class:</label>
+          <label className="text-sm font-medium text-slate-600 dark:text-slate-400 dark:text-slate-500">Select Class:</label>
           <select
             className="input w-48"
             value={selectedClass}
@@ -173,12 +174,12 @@ export default function SubjectList() {
             </thead>
             <tbody>
               {subjects.map((sub) => (
-                <tr key={sub._id} className="border-b last:border-0 hover:bg-gray-50">
+                <tr key={sub._id} className="border-b last:border-0 hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50">
                   <td className="py-3 flex items-center gap-2">
                     <BookOpen size={16} className="text-primary-500" />
-                    <span className="font-medium text-gray-700">{sub.name}</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{sub.name}</span>
                   </td>
-                  <td className="py-3 text-gray-600">{sub.teacher?.name || sub.teacher || "-"}</td>
+                  <td className="py-3 text-slate-600 dark:text-slate-400 dark:text-slate-500">{sub.teacher?.name || sub.teacher || "-"}</td>
                   <td className="py-3 text-right">
                     <button onClick={() => openModal(sub)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded mr-2">
                       <Edit size={16} />
@@ -191,7 +192,7 @@ export default function SubjectList() {
               ))}
               {subjects.length === 0 && (
                 <tr>
-                  <td colSpan="3" className="py-4 text-center text-gray-400">No subjects found for this class.</td>
+                  <td colSpan="3" className="py-4 text-center text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">No subjects found for this class.</td>
                 </tr>
               )}
             </tbody>
@@ -201,10 +202,10 @@ export default function SubjectList() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl overflow-hidden my-8">
-            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h3 className="font-bold text-gray-800">{editId ? "Edit Subject" : "Add Subject"}</h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg w-full max-w-2xl overflow-hidden my-8">
+            <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+              <h3 className="font-bold text-slate-800 dark:text-slate-100">{editId ? "Edit Subject" : "Add Subject"}</h3>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400 dark:text-slate-500">✕</button>
             </div>
             <form onSubmit={handleSubmit} className="p-4 space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -234,7 +235,7 @@ export default function SubjectList() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100">
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
                 <div className="flex justify-between items-center mb-4">
                   <label className="label mb-0">Timetable Schedule</label>
                   <button type="button" onClick={addScheduleSlot} className="btn-secondary text-xs py-1 px-2">
@@ -243,16 +244,16 @@ export default function SubjectList() {
                 </div>
                 
                 {form.schedule.length === 0 ? (
-                  <p className="text-sm text-gray-400 italic">No schedule slots added. This subject will not appear on the timetable.</p>
+                  <p className="text-sm text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 italic">No schedule slots added. This subject will not appear on the timetable.</p>
                 ) : (
                   <div className="space-y-3">
                     {form.schedule.map((slot, index) => (
-                      <div key={index} className="flex flex-wrap items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-200">
+                      <div key={index} className="flex flex-wrap items-center gap-2 bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
                         <select className="input text-sm flex-1 min-w-[100px]" value={slot.day} onChange={(e) => updateScheduleSlot(index, "day", e.target.value)}>
                           {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                         <div className="flex items-center gap-1">
-                          <span className="text-sm font-medium text-gray-500">Period</span>
+                          <span className="text-sm font-medium text-slate-500 dark:text-slate-400 dark:text-slate-500">Period</span>
                           <input type="number" min="1" className="input text-sm w-16" value={slot.periodNumber} onChange={(e) => updateScheduleSlot(index, "periodNumber", Number(e.target.value))} />
                         </div>
                         <input className="input text-sm w-28" placeholder="Start" value={slot.startTime} onChange={(e) => updateScheduleSlot(index, "startTime", e.target.value)} />
@@ -266,8 +267,8 @@ export default function SubjectList() {
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-gray-100">
-                <button type="button" onClick={() => setShowModal(false)} className="btn bg-gray-100 hover:bg-gray-200 text-gray-700">Cancel</button>
+              <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-700">
+                <button type="button" onClick={() => setShowModal(false)} className="btn bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">Cancel</button>
                 <button type="submit" className="btn btn-primary">Save Subject</button>
               </div>
             </form>

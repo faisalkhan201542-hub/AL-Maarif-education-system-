@@ -2,9 +2,10 @@ import Timetable from "../models/Timetable.js";
 
 // @route GET /api/timetable
 export const getTimetable = async (req, res) => {
-  const { class: className } = req.query;
+  const { class: className, teacher } = req.query;
   const query = {};
   if (className) query.class = className;
+  if (teacher) query.teacher = teacher;
   
   const timetable = await Timetable.find(query).sort({ day: 1, periodNumber: 1 }).populate("teacher", "name teacherId phone");
   res.json(timetable);

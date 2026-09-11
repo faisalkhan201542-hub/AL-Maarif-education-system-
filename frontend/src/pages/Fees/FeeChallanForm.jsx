@@ -131,7 +131,7 @@ export default function FeeChallanForm() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">{isEdit ? "Edit Fee Challan" : "Generate Fee Challan"}</h1>
+      <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{isEdit ? "Edit Fee Challan" : "Generate Fee Challan"}</h1>
 
       <form onSubmit={handleSubmit} className="card space-y-4">
         <div>
@@ -140,7 +140,7 @@ export default function FeeChallanForm() {
             <div className="flex items-center justify-between bg-primary-50 rounded-lg px-3 py-2">
               <div className="text-sm">
                 <p className="font-medium">{selectedStudent.name}</p>
-                <p className="text-xs text-gray-500">{selectedStudent.registrationNumber} • Class {selectedStudent.class}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{selectedStudent.registrationNumber} • Class {selectedStudent.class}</p>
               </div>
               {!isEdit && <button type="button" className="text-xs text-primary-700" onClick={() => { setSelectedStudent(null); setForm({ ...form, student: "" }); }}>Change</button>}
             </div>
@@ -148,9 +148,9 @@ export default function FeeChallanForm() {
             <div className="relative">
               <input className="input" placeholder="Search student by name or registration no..." value={studentSearch} onChange={(e) => setStudentSearch(e.target.value)} />
               {students.length > 0 && (
-                <div className="absolute z-10 bg-white border border-gray-200 rounded-lg shadow-lg w-full mt-1 max-h-56 overflow-y-auto">
+                <div className="absolute z-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg w-full mt-1 max-h-56 overflow-y-auto">
                   {students.map((s) => (
-                    <button type="button" key={s._id} onClick={() => handleSelectStudent(s)} className="w-full text-left px-3 py-2 hover:bg-gray-50 text-sm border-b last:border-0">
+                    <button type="button" key={s._id} onClick={() => handleSelectStudent(s)} className="w-full text-left px-3 py-2 hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 text-sm border-b last:border-0">
                       {s.name} — {s.registrationNumber} (Class {s.class})
                     </button>
                   ))}
@@ -186,8 +186,8 @@ export default function FeeChallanForm() {
 
       {isEdit && (
         <div className="card space-y-3">
-          <h2 className="font-semibold text-gray-700">Record EasyPaisa Payment</h2>
-          <p className="text-xs text-gray-400">Enter the amount and transaction reference the father shared after paying via EasyPaisa. This will be marked "Pending" until you verify it.</p>
+          <h2 className="font-semibold text-slate-700 dark:text-slate-300">Record EasyPaisa Payment</h2>
+          <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Enter the amount and transaction reference the father shared after paying via EasyPaisa. This will be marked "Pending" until you verify it.</p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div><label className="label">Paid Amount (Rs.)</label><input type="number" className="input" value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} /></div>
             <div><label className="label">EasyPaisa Transaction ID / Reference No.</label><input className="input" value={txnRef} onChange={(e) => setTxnRef(e.target.value)} /></div>

@@ -11,11 +11,15 @@ import {
   exportFeesWord,
   exportResultsExcel,
   exportResultsWord,
+  getAccountingStats,
 } from "../controllers/reportController.js";
 
 const router = express.Router();
 
 router.use(protect);
+
+router.get("/accounting/stats", getAccountingStats);
+
 router.get("/students/excel", exportStudentsExcel);
 router.get("/students/word", exportStudentsWord);
 router.get("/teachers/excel", exportTeachersExcel);

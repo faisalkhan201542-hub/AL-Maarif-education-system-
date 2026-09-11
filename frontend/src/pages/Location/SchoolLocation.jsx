@@ -1,6 +1,6 @@
 import { MapPin, Navigation, ExternalLink } from "lucide-react";
 import { useSettings } from "../../context/SettingsContext.jsx";
-
+import PageHeader from "../../components/PageHeader.jsx";
 export default function SchoolLocation() {
   const { settings } = useSettings();
   const hasMapLink = !!settings?.googleMapsLink;
@@ -11,17 +11,18 @@ export default function SchoolLocation() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">School Location</h1>
-        <p className="text-sm text-gray-400">{settings?.schoolName}</p>
-      </div>
+      <PageHeader 
+        title="School Location"
+        subtitle={settings?.schoolName}
+        className="from-blue-600 via-indigo-600 to-purple-600"
+      />
 
       <div className="card">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 rounded-lg bg-primary-50 text-primary-700 flex items-center justify-center shrink-0"><MapPin size={20}/></div>
           <div>
-            <p className="font-semibold text-gray-800">{settings?.schoolName}</p>
-            <p className="text-sm text-gray-500">{settings?.address}</p>
+            <p className="font-semibold text-slate-800 dark:text-slate-100">{settings?.schoolName}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{settings?.address}</p>
           </div>
         </div>
 
@@ -36,7 +37,7 @@ export default function SchoolLocation() {
           />
         </div>
         {!hasMapLink && (
-          <p className="text-xs text-gray-400 mb-4">
+          <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 mb-4">
             The map above is estimated from the school address. For an exact pin, the Principal can set a precise Google Maps link in School Settings.
           </p>
         )}
@@ -52,9 +53,9 @@ export default function SchoolLocation() {
       </div>
 
       <div className="card">
-        <h2 className="font-semibold text-gray-700 mb-2">Contact</h2>
-        <p className="text-sm text-gray-500">Principal: {settings?.principalName}</p>
-        <p className="text-sm text-gray-500">WhatsApp: {settings?.principalWhatsapp}</p>
+        <h2 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">Contact</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Principal: {settings?.principalName}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">WhatsApp: {settings?.principalWhatsapp}</p>
       </div>
     </div>
   );

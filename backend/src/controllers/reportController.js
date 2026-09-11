@@ -6,6 +6,8 @@ import FeeChallan from "../models/FeeChallan.js";
 import Attendance from "../models/Attendance.js";
 import Result from "../models/Result.js";
 import SchoolSettings from "../models/SchoolSettings.js";
+import Expense from "../models/Expense.js";
+import Payroll from "../models/Payroll.js";
 
 // ---------- Helpers ----------
 async function buildWorkbook(title, columns, rows) {
@@ -301,4 +303,132 @@ export const exportResultsWord = async (req, res) => {
     sections: [{ children: [...buildDocxHeader(settings, "Results Report"), buildDocxTable(resultColumns, rows)] }],
   });
   await sendDocx(res, doc, "Results.docx");
+};
+
+// ---------- ACCOUNTING / PROFIT & LOSS ----------
+export const getAccountingStats = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    
+    // Default to last 12 months if no dates provided
+    let start = new Date();
+    start.setMonth(start.getMonth() - 11);
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+    
+    let end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    if (startDate) start = new Date(startDate);
+    if (endDate) end = new Date(endDate);
+
+    // 1. Fetch Income (Fees collected)
+    const fees = await FeeChallan.find({ 
+      paymentDate: { $gte: start, $lte: end },
+      paidAmount: { $gt: 0 }
+    });
+
+    // 2. Fetch Expenses (Misc)
+    const expenses = await Expense.find({
+      date: { $gte: start, $lte: end }
+    });
+
+    // 3. Fetch Payroll (Paid Salaries)
+    // Payroll uses 'paymentDate' when paid
+    const payrolls = await Payroll.find({
+      paymentDate: { $gte: start, $lte: end },
+      status: "Paid"
+    });
+
+    // Aggregate monthly data
+    const monthlyMap = {};
+
+    // Initialize months in range to ensure 0 values for empty months
+    let curr = new Date(start);
+    curr.setDate(1); // Set to 1st of month to avoid skipping months
+    const endBound = new Date(end);
+    
+    while (curr <= endBound) {
+      const monthKey = curr.toISOString().substring(0, 7); // YYYY-MM
+      const monthName = curr.toLocaleString("default", { month: "short", year: "numeric" });
+      monthlyMap[monthKey] = {
+        name: monthName,
+        sortKey: monthKey,
+        income: 0,
+        expense: 0,
+        payroll: 0,
+        profit: 0
+      };
+      curr.setMonth(curr.getMonth() + 1);
+    }
+
+    // Process Fees
+    fees.forEach(f => {
+      if (!f.paymentDate) return;
+      const key = f.paymentDate.toISOString().substring(0, 7);
+      if (monthlyMap[key]) monthlyMap[key].income += f.paidAmount;
+    });
+
+    // Process Expenses
+    expenses.forEach(e => {
+      if (!e.date) return;
+      const key = e.date.toISOString().substring(0, 7);
+      if (monthlyMap[key]) monthlyMap[key].expense += e.amount;
+    });
+
+    // Process Payroll
+    payrolls.forEach(p => {
+      if (!p.paymentDate) return;
+      const key = p.paymentDate.toISOString().substring(0, 7);
+      if (monthlyMap[key]) monthlyMap[key].payroll += p.netSalary;
+    });
+
+    // Calculate profit and format array
+    const monthlyData = Object.values(monthlyMap)
+      .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+      .map(m => {
+        m.totalExpense = m.expense + m.payroll;
+        m.profit = m.income - m.totalExpense;
+        return m;
+      });
+
+    // Aggregate overall stats
+    const totalIncome = monthlyData.reduce((sum, m) => sum + m.income, 0);
+    const totalMiscExpense = monthlyData.reduce((sum, m) => sum + m.expense, 0);
+    const totalPayroll = monthlyData.reduce((sum, m) => sum + m.payroll, 0);
+    const totalExpense = totalMiscExpense + totalPayroll;
+    const netProfit = totalIncome - totalExpense;
+    const profitMargin = totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(1) : 0;
+
+    // Aggregate expense breakdown by category for Pie Chart
+    const categoryMap = {};
+    expenses.forEach(e => {
+      categoryMap[e.category] = (categoryMap[e.category] || 0) + e.amount;
+    });
+    // Add payroll as a category
+    if (totalPayroll > 0) {
+      categoryMap["Teacher Salaries"] = totalPayroll;
+    }
+
+    const expenseBreakdown = Object.keys(categoryMap).map(key => ({
+      name: key,
+      value: categoryMap[key]
+    })).sort((a, b) => b.value - a.value);
+
+    res.json({
+      monthlyData,
+      summary: {
+        totalIncome,
+        totalMiscExpense,
+        totalPayroll,
+        totalExpense,
+        netProfit,
+        profitMargin
+      },
+      expenseBreakdown
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error generating accounting stats" });
+  }
 };

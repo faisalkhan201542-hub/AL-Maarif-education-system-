@@ -1,6 +1,7 @@
 import Attendance from "../models/Attendance.js";
 import Student from "../models/Student.js";
 import FeeChallan from "../models/FeeChallan.js";
+import { sendMessage } from "../services/whatsappService.js";
 
 // @desc Get attendance for a class + date
 // @route GET /api/attendance?class=KG&date=2026-01-05
@@ -40,7 +41,7 @@ export const markBulkAttendance = async (req, res) => {
 
   const existingRecords = await Attendance.find({ dateString, class: className });
   const ops = [];
-  const absentStudentIds = [];
+  const absentStudentsInfo = [];
 
   records.forEach((r) => {
     const existing = existingRecords.find(e => String(e.student) === String(r.studentId));
@@ -53,9 +54,9 @@ export const markBulkAttendance = async (req, res) => {
       },
     });
 
-    // Only apply fine if they were not already absent today
-    if (r.status === "Absent" && (!existing || existing.status !== "Absent")) {
-      absentStudentIds.push(r.studentId);
+    // We collect info for students who are marked absent today
+    if (r.status === "Absent") {
+      absentStudentsInfo.push({ studentId: r.studentId, isNewAbsence: (!existing || existing.status !== "Absent") });
     }
   });
 
@@ -63,10 +64,23 @@ export const markBulkAttendance = async (req, res) => {
     await Attendance.bulkWrite(ops);
   }
 
+  // Fetch full student details for the absent ones to return to frontend for WhatsApp
+  const absentIds = absentStudentsInfo.map(info => info.studentId);
+  const fullAbsentStudents = await Student.find({ _id: { $in: absentIds } }).select("name fatherName fatherWhatsapp registrationNumber");
+  
+  const absentResponse = fullAbsentStudents.map(student => ({
+    _id: student._id,
+    name: student.name,
+    fatherName: student.fatherName,
+    fatherWhatsapp: student.fatherWhatsapp,
+    registrationNumber: student.registrationNumber
+  }));
+
   // Apply Rs. 50 fine to the current month's fee challan for new absentees
-  if (absentStudentIds.length > 0) {
+  const newlyAbsentIds = absentStudentsInfo.filter(info => info.isNewAbsence).map(info => info.studentId);
+  if (newlyAbsentIds.length > 0) {
     const monthLabel = day.toLocaleString("en-US", { month: "long", year: "numeric" });
-    const challans = await FeeChallan.find({ student: { $in: absentStudentIds }, billingMonth: monthLabel });
+    const challans = await FeeChallan.find({ student: { $in: newlyAbsentIds }, billingMonth: monthLabel });
     
     for (const challan of challans) {
       challan.fine = (challan.fine || 0) + 50;
@@ -74,7 +88,18 @@ export const markBulkAttendance = async (req, res) => {
     }
   }
 
-  res.json({ message: "Attendance saved successfully" });
+  // Send WhatsApp Absent Alerts
+  absentResponse.forEach(student => {
+    if (student.fatherWhatsapp) {
+      const msg = `🔔 *Al-Maarif Education (Ghair Hazri Alert)*\n\nAssalam-o-Alaikum!\nMohtaram Walidain, aap ka bacha/bachi *${student.name}* (Class: ${className}) aaj school mein ghair-hazir (absent) hai.\nBaraye meharbani bache ki ghair hazri ki wajah se school intizamiya ko aagah karein.\n\nShukriya!`;
+      sendMessage(student.fatherWhatsapp, msg).catch(err => console.error("Failed to send absent alert to", student.name, err.message));
+    }
+  });
+
+  res.json({ 
+    message: "Attendance saved successfully",
+    absentStudents: absentResponse
+  });
 };
 
 // @desc Get a student's attendance history + monthly percentage

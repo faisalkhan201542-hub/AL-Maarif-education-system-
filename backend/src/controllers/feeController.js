@@ -3,6 +3,7 @@ import Student from "../models/Student.js";
 import SchoolSettings from "../models/SchoolSettings.js";
 import { generateChallanNumber, generateReceiptNumber } from "../utils/idGenerators.js";
 import { buildWhatsappLink } from "../utils/whatsapp.js";
+import { sendMessage } from "../services/whatsappService.js";
 import Announcement from "../models/Announcement.js";
 
 // @desc List challans with filters, pagination
@@ -133,6 +134,79 @@ export const createChallan = async (req, res) => {
   }
 };
 
+// @desc Bulk generate fee challans for a specific class
+// @route POST /api/fees/bulk
+export const bulkCreateChallans = async (req, res) => {
+  const {
+    class: className,
+    challanType,
+    billingMonth,
+    dueDate,
+    feeAmount,
+    admissionFee,
+    examinationFee,
+    otherCharges,
+    discount,
+    fine,
+  } = req.body;
+
+  if (!className || !billingMonth || !dueDate) {
+    return res.status(400).json({ message: "Class, billing month, and due date are required" });
+  }
+
+  // Find all active students in the class
+  const students = await Student.find({ class: className, status: "Active" });
+  
+  if (students.length === 0) {
+    return res.status(404).json({ message: "No active students found in this class." });
+  }
+
+  const settings = await SchoolSettings.getSettings();
+  let createdCount = 0;
+  let duplicateCount = 0;
+
+  for (const student of students) {
+    // Check if challan already exists to prevent error throwing
+    const existing = await FeeChallan.findOne({ 
+      student: student._id, 
+      billingMonth, 
+      challanType: challanType || "Monthly Fee" 
+    });
+
+    if (existing) {
+      duplicateCount++;
+      continue;
+    }
+
+    const challanNumber = await generateChallanNumber();
+    
+    await FeeChallan.create({
+      student: student._id,
+      challanNumber,
+      challanType: challanType || "Monthly Fee",
+      class: student.class,
+      billingMonth,
+      dueDate,
+      feeAmount: Number(feeAmount) || 0,
+      admissionFee: Number(admissionFee) || 0,
+      examinationFee: Number(examinationFee) || 0,
+      otherCharges: Number(otherCharges) || 0,
+      discount: Number(discount) || 0,
+      fine: Number(fine) || 0,
+      previousBalance: 0, // usually handled manually or script
+      paymentMethod: "EasyPaisa",
+      easypaisaNumber: settings.easypaisaNumber,
+    });
+    createdCount++;
+  }
+
+  res.status(201).json({
+    message: `Generated ${createdCount} challans. Skipped ${duplicateCount} duplicates.`,
+    created: createdCount,
+    duplicates: duplicateCount
+  });
+};
+
 // @route PUT /api/fees/:id
 export const updateChallan = async (req, res) => {
   const challan = await FeeChallan.findById(req.params.id);
@@ -209,6 +283,33 @@ export const verifyPayment = async (req, res) => {
   res.json(challan);
 };
 
+// @desc Fast-track manual payment (Handles partial/full & auto-verifies)
+// @route PUT /api/fees/:id/receive-payment
+export const receivePayment = async (req, res) => {
+  const challan = await FeeChallan.findById(req.params.id).populate("student");
+  if (!challan) return res.status(404).json({ message: "Challan not found" });
+
+  const amountReceived = Number(req.body.amount);
+  if (isNaN(amountReceived) || amountReceived <= 0) {
+    return res.status(400).json({ message: "Valid amount is required" });
+  }
+
+  challan.paidAmount = (challan.paidAmount || 0) + amountReceived;
+  challan.paymentMethod = req.body.paymentMethod || "Cash";
+  challan.paymentDate = new Date();
+  challan.verificationStatus = "Verified";
+  challan.verifiedBy = req.principal?.name || "Principal";
+
+  // If fully paid, generate receipt
+  // Note: mongoose pre-validate hook will calculate paymentStatus and remainingAmount automatically
+  if ((challan.paidAmount >= challan.totalAmount) && !challan.receiptNumber) {
+    challan.receiptNumber = await generateReceiptNumber();
+  }
+
+  await challan.save();
+  res.json(challan);
+};
+
 // @route DELETE /api/fees/:id
 export const deleteChallan = async (req, res) => {
   const challan = await FeeChallan.findById(req.params.id);
@@ -224,22 +325,8 @@ export const getChallanWhatsappLink = async (req, res) => {
   if (!challan) return res.status(404).json({ message: "Challan not found" });
   const settings = await SchoolSettings.getSettings();
 
-  const message = `Assalam-o-Alaikum. This is the fee challan for your child at ${settings.schoolName}.
-
-Student: ${challan.student.name}
-Registration No: ${challan.student.registrationNumber}
-Class: ${challan.class}
-Month: ${challan.billingMonth}
-Total Fee: Rs. ${challan.totalAmount}
-Due Date: ${new Date(challan.dueDate).toDateString()}
-
-EasyPaisa Payment Number:
-${settings.easypaisaNumber}
-
-Please send the payment and keep the transaction reference for confirmation.
-
-Thank you.
-${settings.schoolName}`;
+  const paymentLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/pay/${challan._id}`;
+  const message = `📄 *Al-Maarif Education (Fee Challan - ${challan.billingMonth})*\n\nAssalam-o-Alaikum!\nMohtaram Walidain, aap ke bache *${challan.student.name}* (Class: ${challan.class}) ki fees due hai.\n\n*Tafseelat:*\n- Mahina: ${challan.billingMonth}\n- Baqaya Jaat (Arrears): Rs. ${challan.previousBalance}\n- Mahana Fees: Rs. ${challan.feeAmount}\n- Total Fees: *Rs. ${challan.totalAmount}*\n- Aakhri Tareeq (Due Date): ${new Date(challan.dueDate).toDateString()}\n\n*Online Adaigi (Card/Stripe):*\n👉 Barraye Meharbani is link par click kar ke online fee jama karwayein: ${paymentLink}\n\n*Adaigi Ka Tareeqa (EasyPaisa):*\nAccount Number: ${settings.easypaisaNumber}\nAccount Name: Murad Ali Khalil\n\nBaraye meharbani aakhri tareeq se pehle fees jama karwayein taa k jurmane se bacha ja sake. Agar aap ne EasyPaisa se pay kiya hai toh uski rasid (screenshot) isi number par bhej dein taa k aap ki fees system mein clear ki ja sake (Online Stripe payment khud-ba-khud verify ho jayegi). Shukriya!`;
 
   const link = buildWhatsappLink(challan.student.fatherWhatsapp, message);
   res.json({ link, message });
@@ -252,7 +339,38 @@ export const getFeeReminderWhatsappLink = async (req, res) => {
   if (!challan) return res.status(404).json({ message: "Challan not found" });
   const settings = await SchoolSettings.getSettings();
 
-  const message = `Assalam-o-Alaikum, this is a reminder regarding the pending school fee of your child. Please contact ${settings.schoolName} for further information.`;
+  const paymentLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/pay/${challan._id}`;
+  const message = `🔔 *Al-Maarif Education (Fee Reminder)*\n\nAssalam-o-Alaikum!\nMohtaram Walidain, aap ke bache *${challan.student.name}* (Class: ${challan.class}) ki fees baqaya hai.\n\n*Tafseelat:*\n- Baqaya Jaat: Rs. ${challan.previousBalance}\n- Mahana Fees: Rs. ${challan.feeAmount}\n- Total Baqaya: *Rs. ${challan.totalAmount}*\n\n*Online Adaigi (Card/Stripe):*\n👉 Barraye Meharbani is link par click kar ke online fee jama karwayein: ${paymentLink}\n\n*Adaigi Ka Tareeqa (EasyPaisa):*\nAccount Number: ${settings.easypaisaNumber}\nAccount Name: Murad Ali Khalil\n\nBaraye meharbani jald az jald fees jama karwayein taa k bache ki parhai mutassir na ho. Agar aap ne EasyPaisa se pay kiya hai toh uski rasid (screenshot) isi number par lazmi bhej dein taa k aap ki fees clear ki ja sake (Online Stripe payment khud-ba-khud verify ho jayegi). Shukriya!`;
   const link = buildWhatsappLink(challan.student.fatherWhatsapp, message);
   res.json({ link, message });
+};
+
+// @desc Blast WhatsApp Fee Reminders for unpaid/partial challans
+// @route POST /api/fees/blast-reminders
+export const blastReminders = async (req, res) => {
+  const { class: className, billingMonth } = req.body;
+  if (!billingMonth) {
+    return res.status(400).json({ message: "Billing month is required" });
+  }
+
+  const query = { 
+    billingMonth, 
+    paymentStatus: { $in: ["Unpaid", "Partial"] } 
+  };
+  if (className) query.class = className;
+
+  const challans = await FeeChallan.find(query).populate("student");
+  const settings = await SchoolSettings.getSettings();
+
+  let sentCount = 0;
+  for (const challan of challans) {
+    if (challan.student && challan.student.fatherWhatsapp) {
+      const paymentLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/pay/${challan._id}`;
+      const msg = `📄 *Al-Maarif Education (Fee Challan - ${challan.billingMonth})*\n\nAssalam-o-Alaikum!\nMohtaram Walidain, aap ke bache *${challan.student.name}* (Class: ${challan.class}) ki fees due hai.\n\n*Tafseelat:*\n- Mahina: ${challan.billingMonth}\n- Baqaya Jaat (Arrears): Rs. ${challan.previousBalance}\n- Mahana Fees: Rs. ${challan.feeAmount}\n- Total Fees: *Rs. ${challan.totalAmount}*\n- Aakhri Tareeq (Due Date): ${new Date(challan.dueDate).toDateString()}\n\n*Online Adaigi (Card/Stripe):*\n👉 Barraye Meharbani is link par click kar ke online fee jama karwayein: ${paymentLink}\n\n*Adaigi Ka Tareeqa (EasyPaisa):*\nAccount Number: ${settings.easypaisaNumber}\nAccount Name: Murad Ali Khalil\n\nBaraye meharbani aakhri tareeq se pehle fees jama karwayein taa k jurmane se bacha ja sake. Agar aap ne EasyPaisa se pay kiya hai toh uski rasid (screenshot) isi number par bhej dein taa k aap ki fees system mein clear ki ja sake (Online Stripe payment khud-ba-khud verify ho jayegi). Shukriya!`;
+      sendMessage(challan.student.fatherWhatsapp, msg).catch(err => console.error("Failed to send fee reminder to", challan.student.name, err.message));
+      sentCount++;
+    }
+  }
+
+  res.json({ message: `Reminders sent to ${sentCount} students.` });
 };

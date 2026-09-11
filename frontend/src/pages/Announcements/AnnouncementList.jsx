@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { Plus, Trash2, Megaphone } from "lucide-react";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
+import PageHeader from "../../components/PageHeader.jsx";
 import EmptyState from "../../components/EmptyState.jsx";
 import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 import { ANNOUNCEMENT_TYPES, ANNOUNCEMENT_PRIORITY } from "../../utils/constants.js";
@@ -50,10 +51,16 @@ export default function AnnouncementList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-gray-800">Announcements</h1>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}><Plus size={16}/> New Announcement</button>
-      </div>
+      <PageHeader 
+        title="Announcements"
+        subtitle="Manage school-wide and class-specific announcements"
+        className="from-indigo-500 via-purple-500 to-pink-500"
+        rightElement={
+          <button className="px-4 py-2 bg-white text-indigo-600 hover:bg-indigo-50 rounded-lg shadow-sm font-bold flex items-center gap-2 transition-colors" onClick={() => setShowForm(!showForm)}>
+            <Plus size={16}/> New Announcement
+          </button>
+        }
+      />
 
       {showForm && (
         <form onSubmit={handleCreate} className="card space-y-4">
@@ -87,12 +94,12 @@ export default function AnnouncementList() {
             <div key={a._id} className="card flex items-start justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-gray-800">{a.title}</h3>
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-100">{a.title}</h3>
                   <span className={priorityColor[a.priority]}>{a.priority}</span>
                   <span className="badge-gray">{a.type}</span>
                 </div>
-                <p className="text-sm text-gray-500">{a.description}</p>
-                <p className="text-xs text-gray-400 mt-1">{fmtDate(a.date)}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{a.description}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-1">{fmtDate(a.date)}</p>
               </div>
               <button className="btn-danger btn-sm shrink-0" onClick={() => setDeleteTarget(a)}><Trash2 size={14}/></button>
             </div>

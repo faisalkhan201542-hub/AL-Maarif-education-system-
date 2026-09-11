@@ -1,6 +1,7 @@
 import Result from "../models/Result.js";
 import Exam from "../models/Exam.js";
 import Student from "../models/Student.js";
+import { sendMessage } from "../services/whatsappService.js";
 
 // @desc Enter/update marks for a student in an exam
 // @route POST /api/results
@@ -64,4 +65,25 @@ export const deleteResult = async (req, res) => {
   if (!result) return res.status(404).json({ message: "Result not found" });
   await result.deleteOne();
   res.json({ message: "Result deleted successfully" });
+};
+
+// @desc Blast WhatsApp Result for an exam
+// @route POST /api/results/exam/:examId/blast
+export const blastResults = async (req, res) => {
+  const { examId } = req.params;
+  const results = await Result.find({ exam: examId }).populate("student").populate("exam");
+  if (!results || results.length === 0) {
+    return res.status(404).json({ message: "No results found for this exam." });
+  }
+
+  let sentCount = 0;
+  for (const result of results) {
+    if (result.student && result.student.fatherWhatsapp) {
+      const msg = `🎓 *Al-Maarif Education (Nateeja / Result)*\n\nAssalam-o-Alaikum!\nAap ke bache *${result.student.name}* (Class: ${result.student.class}) ka nateeja (Exam: ${result.exam.title}) aa gaya hai.\n\n*Result Tafseel:*\n- Total Marks: ${result.totalMarks}\n- Obtained Marks: ${result.obtainedMarks}\n- Percentage: ${result.percentage.toFixed(2)}%\n- Position in Class: ${result.position || "N/A"}\n\nMazeed tafseel aur result card ke liye school tashreef layein.\nShukriya!`;
+      sendMessage(result.student.fatherWhatsapp, msg).catch(err => console.error("Failed to send result alert to", result.student.name, err.message));
+      sentCount++;
+    }
+  }
+
+  res.json({ message: `Results blasted to ${sentCount} students.` });
 };
