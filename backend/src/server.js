@@ -39,7 +39,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: [
+      process.env.CLIENT_URL, 
+      "https://al-maarif-education-system.vercel.app", 
+      "http://localhost:5173"
+    ].filter(Boolean),
     credentials: true,
   })
 );
