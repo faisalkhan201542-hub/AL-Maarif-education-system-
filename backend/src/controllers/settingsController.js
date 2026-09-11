@@ -34,6 +34,9 @@ export const updateSettings = async (req, res) => {
       settings.markModified("feeStructure");
     } catch (e) {
       console.error("Invalid feeStructure format");
+    }
+  }
+
   if (req.files) {
     if (req.files.logo && req.files.logo[0]) {
       const fs = await import("fs");
