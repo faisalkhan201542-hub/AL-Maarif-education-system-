@@ -118,7 +118,11 @@ export const initializeWhatsApp = () => {
     }
   });
 
-  client.initialize();
+  client.initialize().catch(err => {
+    console.error("WhatsApp initialization failed (this is normal on Render without Puppeteer dependencies):", err.message);
+    status = 'DISCONNECTED';
+    client = null;
+  });
 };
 
 export const getStatus = () => {
