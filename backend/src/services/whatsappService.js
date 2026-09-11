@@ -18,13 +18,19 @@ export const initializeWhatsApp = () => {
 
   console.log("Initializing WhatsApp Client...");
   
+  const puppeteerOptions = {
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+  };
+
+  // Use hardcoded path only on Windows local environments
+  if (process.platform === 'win32') {
+    puppeteerOptions.executablePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+  }
+
   client = new Client({
     authStrategy: new LocalAuth({ clientId: "almaarif-session" }),
-    puppeteer: {
-      headless: true,
-      executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    }
+    puppeteer: puppeteerOptions
   });
 
   client.on('qr', async (qr) => {
