@@ -5,8 +5,8 @@ const connectDB = async () => {
   let uri = process.env.MONGO_URI;
   
   if (isProduction || (uri && !uri.startsWith("mongodb://") && !uri.startsWith("mongodb+srv://"))) {
-    // The password "Maarif@123" must be URL encoded because "@" is a reserved character. "@" becomes "%40"
-    uri = "mongodb+srv://schooladmin123:Maarif%40123@cluster0.faevmkq.mongodb.net/al_maarif_education?retryWrites=true&w=majority&appName=Cluster0";
+    // Override with Atlas URI in production or if Render env var is broken
+    uri = "mongodb+srv://schooladmin123:Maarif12345@cluster0.faevmkq.mongodb.net/al_maarif_education?retryWrites=true&w=majority&appName=Cluster0";
   } else {
     // Local development fallback
     uri = uri || "mongodb://127.0.0.1:27017/al_maarif_education";
