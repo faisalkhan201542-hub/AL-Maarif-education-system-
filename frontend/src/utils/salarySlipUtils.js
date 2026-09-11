@@ -24,7 +24,9 @@ export const generateSalarySlipPDF = async (payroll, settings) => {
   try {
     if (logoUrl) {
       const img = new Image();
-      img.src = logoUrl.startsWith("http") ? logoUrl : (import.meta.env.VITE_API_URL || "http://localhost:5000") + logoUrl;
+      img.src = logoUrl.startsWith("data:") 
+        ? logoUrl 
+        : (logoUrl.startsWith("http") ? logoUrl : (import.meta.env.VITE_API_URL || "http://localhost:5000") + logoUrl);
       await new Promise((resolve) => {
         img.onload = () => {
           doc.addImage(img, "PNG", 15, y, 20, 20);

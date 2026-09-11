@@ -34,15 +34,20 @@ export const updateSettings = async (req, res) => {
       settings.markModified("feeStructure");
     } catch (e) {
       console.error("Invalid feeStructure format");
-    }
-  }
-
   if (req.files) {
     if (req.files.logo && req.files.logo[0]) {
-      settings.logoUrl = `/uploads/logo/${req.files.logo[0].filename}`;
+      const fs = await import("fs");
+      const file = req.files.logo[0];
+      const base64 = fs.readFileSync(file.path, { encoding: 'base64' });
+      settings.logoUrl = `data:${file.mimetype};base64,${base64}`;
+      fs.unlinkSync(file.path);
     }
     if (req.files.qrCode && req.files.qrCode[0]) {
-      settings.qrCodeUrl = `/uploads/logo/${req.files.qrCode[0].filename}`;
+      const fs = await import("fs");
+      const file = req.files.qrCode[0];
+      const base64 = fs.readFileSync(file.path, { encoding: 'base64' });
+      settings.qrCodeUrl = `data:${file.mimetype};base64,${base64}`;
+      fs.unlinkSync(file.path);
     }
   }
 

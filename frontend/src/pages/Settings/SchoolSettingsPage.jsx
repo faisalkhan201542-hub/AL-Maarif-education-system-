@@ -18,7 +18,7 @@ export default function SchoolSettingsPage() {
   useEffect(() => {
     if (settings) {
       setForm(settings);
-      if (settings.logoUrl) setLogoPreview(`${API_URL}${settings.logoUrl}`);
+      if (settings.logoUrl) setLogoPreview(settings.logoUrl.startsWith("data:") ? settings.logoUrl : `${API_URL}${settings.logoUrl}`);
     }
   }, [settings]);
 

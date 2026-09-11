@@ -5,7 +5,9 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export default function Logo({ size = 40, showName = true, dark = false }) {
   const { settings } = useSettings();
-  const logoSrc = settings?.logoUrl ? `${API_URL}${settings.logoUrl}` : null;
+  const logoSrc = settings?.logoUrl?.startsWith("data:") 
+    ? settings.logoUrl 
+    : (settings?.logoUrl ? `${API_URL}${settings.logoUrl}` : null);
 
   return (
     <div className="flex items-center gap-2">
