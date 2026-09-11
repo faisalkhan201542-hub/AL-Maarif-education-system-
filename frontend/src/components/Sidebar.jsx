@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import {
   Gauge, GraduationCap, Building, Briefcase, CalendarCheck2, CreditCard,
-  ScrollText, BookOpen, Clock, BellRing, TrendingUp, Award, MapPin, Settings, LogOut
+  ScrollText, BookOpen, Clock, BellRing, TrendingUp, Award, MapPin, Settings, LogOut, Building2
 } from "lucide-react";
 import Logo from "./Logo.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -18,7 +18,7 @@ const links = [
   { to: "/timetable", label: "Timetable", icon: Clock },
   { to: "/announcements", label: "Announcements", icon: BellRing },
   { to: "/reports", label: "Reports", icon: TrendingUp },
-  { to: "/certificate", label: "Certificate", icon: Award },
+
   { to: "/location", label: "School Location", icon: MapPin },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

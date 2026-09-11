@@ -6,6 +6,7 @@ import {
   createStudent,
   updateStudent,
   deleteStudent,
+  restoreStudent,
 } from "../controllers/studentController.js";
 import { protect } from "../middleware/auth.js";
 import { uploadStudentPhoto } from "../middleware/upload.js";
@@ -17,6 +18,7 @@ router.get("/", getStudents);
 router.post("/", uploadStudentPhoto.single("photo"), createStudent);
 router.get("/:id", getStudentById);
 router.get("/:id/profile", getStudentProfileBundle);
+router.put("/:id/restore", restoreStudent);
 router.put("/:id", uploadStudentPhoto.single("photo"), updateStudent);
 router.delete("/:id", deleteStudent);
 

@@ -49,32 +49,26 @@ export default function ResultCard() {
       </div>
 
       <div 
-        className="card print-area p-0 overflow-hidden bg-white shadow-2xl rounded-2xl border-0 print:shadow-none print:rounded-none"
+        className="card print-area border border-slate-200 p-0 overflow-hidden relative max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl print:shadow-none print:rounded-none print:border-none"
         style={{ printColorAdjust: 'exact', WebkitPrintColorAdjust: 'exact' }}
       >
-        {/* Colorful Gradient Header */}
-        <div className="bg-gradient-to-r from-primary-800 via-primary-700 to-blue-800 text-white p-8 pb-12 relative print:bg-primary-800 overflow-hidden">
-          <div className="absolute -top-10 -right-10 p-8 opacity-10 rotate-12">
-            <Award size={240} />
-          </div>
-          
-          <div className="flex flex-col items-center text-center relative z-10">
-            <div className="bg-white p-3 rounded-2xl shadow-xl mb-4 inline-block">
-               <Logo size={64} showName={false} />
+        <div className="px-8 pt-8 pb-6 relative z-10">
+          <div className="flex items-center justify-between border-b pb-4 mb-6">
+            <div className="flex items-center gap-4">
+              <img src="/logo.jpg" alt="Logo" className="h-20 w-auto object-contain" />
+              <div>
+                <h1 className="text-3xl font-black text-slate-800">{settings?.schoolName || "Al-Maarif Education"}</h1>
+                <p className="text-slate-500 font-medium">{settings?.address || "School Address"}</p>
+                <span className="flex items-center gap-1 text-slate-500 text-sm mt-1"><Phone size={14}/> {settings?.phone || "+92 300 0000000"}</span>
+              </div>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight mb-2 uppercase">{settings?.schoolName || "Al-Maarif Education"}</h1>
-            <div className="flex items-center gap-4 text-primary-100 text-sm font-medium">
-              <span className="flex items-center gap-1"><MapPin size={14}/> {settings?.address || "Main City Road, District"}</span>
-              <span className="flex items-center gap-1"><Phone size={14}/> {settings?.phone || "+92 300 0000000"}</span>
-            </div>
-            
-            <div className="mt-8 bg-white/20 backdrop-blur-sm border border-white/30 px-6 py-2 rounded-full">
-              <h2 className="text-xl font-bold tracking-widest uppercase text-white">Student Result Card</h2>
+            <div className="text-right">
+              <h2 className="text-2xl font-bold tracking-wider uppercase text-slate-700">Result Card</h2>
             </div>
           </div>
         </div>
 
-        <div className="px-8 -mt-6 relative z-20 mb-8">
+        <div className="px-8 relative z-20 mb-8">
           {/* Student Info Card */}
           <div className="bg-white rounded-xl shadow-lg border border-slate-100 p-6 flex flex-col md:flex-row gap-6 items-center md:items-start">
             <div className="relative">

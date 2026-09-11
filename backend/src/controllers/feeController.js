@@ -103,25 +103,34 @@ export const createChallan = async (req, res) => {
   const settings = await SchoolSettings.getSettings();
   const challanNumber = await generateChallanNumber();
 
-  const challan = await FeeChallan.create({
-    student: student._id,
-    challanNumber,
-    challanType: challanType || "Monthly Fee",
-    class: student.class,
-    billingMonth,
-    dueDate,
-    feeAmount: Number(feeAmount) || 0,
-    admissionFee: Number(admissionFee) || 0,
-    examinationFee: Number(examinationFee) || 0,
-    otherCharges: Number(otherCharges) || 0,
-    discount: Number(discount) || 0,
-    fine: Number(fine) || 0,
-    previousBalance: Number(previousBalance) || 0,
-    paymentMethod: "EasyPaisa",
-    easypaisaNumber: settings.easypaisaNumber,
-  });
+  try {
+    const challan = await FeeChallan.create({
+      student: student._id,
+      challanNumber,
+      challanType: challanType || "Monthly Fee",
+      class: student.class,
+      billingMonth,
+      dueDate,
+      feeAmount: Number(feeAmount) || 0,
+      admissionFee: Number(admissionFee) || 0,
+      examinationFee: Number(examinationFee) || 0,
+      otherCharges: Number(otherCharges) || 0,
+      discount: Number(discount) || 0,
+      fine: Number(fine) || 0,
+      previousBalance: Number(previousBalance) || 0,
+      paymentMethod: "EasyPaisa",
+      easypaisaNumber: settings.easypaisaNumber,
+    });
 
-  res.status(201).json(challan);
+    res.status(201).json(challan);
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ 
+        message: "A challan of this type has already been generated for this student for the selected month." 
+      });
+    }
+    throw error;
+  }
 };
 
 // @route PUT /api/fees/:id

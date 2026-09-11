@@ -56,4 +56,8 @@ feeChallanSchema.pre("validate", function (next) {
   next();
 });
 
+feeChallanSchema.index({ student: 1, billingMonth: 1, challanType: 1 }, { unique: true });
+feeChallanSchema.index({ paymentStatus: 1, dueDate: 1 });
+feeChallanSchema.index({ class: 1, billingMonth: 1 });
+
 export default mongoose.model("FeeChallan", feeChallanSchema);

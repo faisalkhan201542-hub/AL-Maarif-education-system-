@@ -23,9 +23,9 @@ const timetableSchema = new mongoose.Schema(
       trim: true,
     },
     teacher: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
       required: true,
-      trim: true,
     },
     startTime: {
       type: String, // e.g., "08:00 AM"
@@ -41,5 +41,8 @@ const timetableSchema = new mongoose.Schema(
 
 // Ensure a class doesn't have overlapping periods for the same day and period number
 timetableSchema.index({ class: 1, day: 1, periodNumber: 1 }, { unique: true });
+
+// Prevent a teacher from being assigned to two different classes in the same period on the same day
+timetableSchema.index({ teacher: 1, day: 1, periodNumber: 1 }, { unique: true });
 
 export default mongoose.model("Timetable", timetableSchema);

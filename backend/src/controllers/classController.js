@@ -30,12 +30,10 @@ export const getClassDetail = async (req, res) => {
   const studentIds = students.map((s) => s._id);
 
   const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999);
+  const todayString = startOfToday.toISOString().split("T")[0];
 
   const [todayAttendance, pendingChallans, results, teacher] = await Promise.all([
-    Attendance.find({ student: { $in: studentIds }, date: { $gte: startOfToday, $lte: endOfToday } }),
+    Attendance.find({ student: { $in: studentIds }, dateString: todayString }),
     FeeChallan.find({ student: { $in: studentIds }, paymentStatus: { $ne: "Paid" } }),
     Result.find({ student: { $in: studentIds } }),
     Teacher.findOne({ assignedClass: className }),

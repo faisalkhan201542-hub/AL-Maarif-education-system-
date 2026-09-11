@@ -28,6 +28,8 @@ const resultSchema = new mongoose.Schema(
 );
 
 resultSchema.index({ student: 1, exam: 1 }, { unique: true });
+resultSchema.index({ exam: 1, class: 1, percentage: -1 });
+resultSchema.index({ student: 1, class: 1 });
 
 function gradeFromPercentage(pct) {
   if (pct >= 90) return "A+";

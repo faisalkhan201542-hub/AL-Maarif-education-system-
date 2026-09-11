@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { GraduationCap, Briefcase, Building, CalendarCheck2, CalendarOff, CreditCard, Banknote, BellRing } from "lucide-react";
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
+import { GraduationCap, Briefcase, Building, CalendarCheck2, CalendarOff, CreditCard, Banknote, BellRing, AlertTriangle } from "lucide-react";
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts";
 import api from "../api/axios.js";
 import StatCard from "../components/StatCard.jsx";
 import Loader from "../components/Loader.jsx";
@@ -35,6 +35,38 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Smart Alerts Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {data.pendingFeesCount > 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-4 shadow-sm">
+            <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+              <AlertTriangle size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-red-800">Pending Actions Required</h3>
+              <p className="text-sm text-red-600 mt-1">
+                There are <strong>{data.pendingFeesCount}</strong> students with unpaid fees. Please review the fee challans.
+              </p>
+            </div>
+          </div>
+        )}
+        
+        {data.upcomingExams?.length > 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-4 shadow-sm">
+            <div className="p-2 bg-amber-100 text-amber-600 rounded-lg">
+              <BellRing size={24} />
+            </div>
+            <div>
+              <h3 className="font-bold text-amber-800">Upcoming Exams</h3>
+              <p className="text-sm text-amber-700 mt-1">
+                There are <strong>{data.upcomingExams.length}</strong> upcoming exams scheduled. Ensure preparations are complete.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Top Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="Total Students" value={data.totalStudents} icon={GraduationCap} tone="primary" />
         <StatCard label="Total Teachers" value={data.totalTeachers} icon={Briefcase} tone="gold" />
@@ -46,26 +78,61 @@ export default function Dashboard() {
         <StatCard label="Announcements" value={data.announcements.length} icon={BellRing} tone="blue" />
       </div>
 
-      <div className="bg-red-50 border border-red-100 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-        <div>
-          <h2 className="text-lg font-bold text-red-800 flex items-center gap-2"><CalendarOff size={20}/> Daily Absentee & Fine Report</h2>
-          <p className="text-sm text-red-600 mt-1">Overview of today's absentees and automatically generated fines.</p>
-        </div>
-        <div className="flex gap-8">
-          <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">Total Absentees</p>
-            <p className="text-3xl font-extrabold text-red-700">{data.todayAbsent}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">Fine Generated</p>
-            <p className="text-3xl font-extrabold text-red-700">{fmtMoney(data.todayAbsentFine)}</p>
-          </div>
-        </div>
-      </div>
-
+      {/* Historical Analytics Charts */}
       <div className="grid md:grid-cols-2 gap-6">
+        
         <div className="card">
-          <h2 className="font-semibold text-gray-700 mb-4">Gender Ratio (Boys / Girls)</h2>
+          <h2 className="font-semibold text-gray-700 mb-4">Monthly Revenue Collection (Last 6 Months)</h2>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={data.feeTrends}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="_id" tick={{fontSize: 12}} />
+              <YAxis tick={{fontSize: 12}} width={60} tickFormatter={(val) => `Rs.${val/1000}k`} />
+              <Tooltip formatter={(value) => [fmtMoney(value), "Collected"]} />
+              <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="card">
+          <h2 className="font-semibold text-gray-700 mb-4">Admissions Growth (Last 6 Months)</h2>
+          <ResponsiveContainer width="100%" height={260}>
+            <LineChart data={data.admissionTrends}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="_id" tick={{fontSize: 12}} />
+              <YAxis tick={{fontSize: 12}} width={40} />
+              <Tooltip formatter={(value) => [value, "New Students"]} />
+              <Line type="monotone" dataKey="students" stroke="#10b981" strokeWidth={3} dot={{r: 4}} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="card">
+          <h2 className="font-semibold text-gray-700 mb-4">Attendance Trends (Last 7 Days)</h2>
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart data={data.attendanceTrends}>
+              <defs>
+                <linearGradient id="colorPresent" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorAbsent" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="_id" tick={{fontSize: 12}} tickFormatter={(val) => val.slice(5)} />
+              <YAxis tick={{fontSize: 12}} width={40} />
+              <Tooltip />
+              <Area type="monotone" dataKey="present" stroke="#3b82f6" fillOpacity={1} fill="url(#colorPresent)" name="Present" />
+              <Area type="monotone" dataKey="absent" stroke="#ef4444" fillOpacity={1} fill="url(#colorAbsent)" name="Absent" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="card">
+          <h2 className="font-semibold text-gray-700 mb-4">Gender Ratio (Active Students)</h2>
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie
@@ -86,19 +153,6 @@ export default function Dashboard() {
               <Legend verticalAlign="bottom" height={36} />
             </PieChart>
           </ResponsiveContainer>
-        </div>
-
-        <div className="card">
-          <h2 className="font-semibold text-gray-700 mb-4">Recent Announcements</h2>
-          <div className="space-y-3">
-            {data.announcements.length === 0 && <p className="text-sm text-gray-400">No announcements yet.</p>}
-            {data.announcements.map((a) => (
-              <div key={a._id} className="border-l-4 border-primary-500 pl-3">
-                <p className="text-sm font-medium text-gray-700">{a.title}</p>
-                <p className="text-xs text-gray-400">{fmtDate(a.date)} • {a.type}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 

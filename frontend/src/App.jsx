@@ -34,7 +34,7 @@ import AnnouncementList from "./pages/Announcements/AnnouncementList.jsx";
 import Reports from "./pages/Reports/Reports.jsx";
 import SchoolSettingsPage from "./pages/Settings/SchoolSettingsPage.jsx";
 import SchoolLocation from "./pages/Location/SchoolLocation.jsx";
-import CertificatePage from "./pages/Certificate/CertificatePage.jsx";
+
 
 export default function App() {
   return (
@@ -82,7 +82,7 @@ export default function App() {
         <Route path="reports" element={<Reports />} />
         <Route path="settings" element={<SchoolSettingsPage />} />
         <Route path="location" element={<SchoolLocation />} />
-        <Route path="certificate" element={<CertificatePage />} />
+
       </Route>
 
       <Route path="*" element={<NotFound />} />

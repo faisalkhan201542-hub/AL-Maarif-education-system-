@@ -6,7 +6,7 @@ export const getTimetable = async (req, res) => {
   const query = {};
   if (className) query.class = className;
   
-  const timetable = await Timetable.find(query).sort({ day: 1, periodNumber: 1 });
+  const timetable = await Timetable.find(query).sort({ day: 1, periodNumber: 1 }).populate("teacher", "name teacherId phone");
   res.json(timetable);
 };
 
@@ -23,8 +23,19 @@ export const createPeriod = async (req, res) => {
     return res.status(400).json({ message: "This period is already assigned for this class on this day." });
   }
 
-  const period = await Timetable.create(req.body);
-  res.status(201).json(period);
+  try {
+    const period = await Timetable.create(req.body);
+    res.status(201).json(period);
+  } catch (error) {
+    if (error.code === 11000) {
+      // Check which index failed
+      if (error.keyPattern && error.keyPattern.teacher) {
+        return res.status(400).json({ message: "This teacher is already assigned to another class during this period." });
+      }
+      return res.status(400).json({ message: "This period is already assigned for this class on this day." });
+    }
+    throw error;
+  }
 };
 
 // @route PUT /api/timetable/:id
@@ -33,8 +44,18 @@ export const updatePeriod = async (req, res) => {
   if (!period) return res.status(404).json({ message: "Period not found" });
 
   Object.assign(period, req.body);
-  await period.save();
-  res.json(period);
+  try {
+    await period.save();
+    res.json(period);
+  } catch (error) {
+    if (error.code === 11000) {
+      if (error.keyPattern && error.keyPattern.teacher) {
+        return res.status(400).json({ message: "This teacher is already assigned to another class during this period." });
+      }
+      return res.status(400).json({ message: "This period is already assigned for this class on this day." });
+    }
+    throw error;
+  }
 };
 
 // @route DELETE /api/timetable/:id

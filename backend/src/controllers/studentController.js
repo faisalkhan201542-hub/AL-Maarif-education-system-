@@ -86,7 +86,7 @@ export const getStudentProfileBundle = async (req, res) => {
 // @desc Create student
 // @route POST /api/students
 export const createStudent = async (req, res) => {
-  const { name, fatherName, fatherWhatsapp, gender, dob, address, class: className, rollNumber, parentContact, admissionDate, status, registrationNumber: providedRegNumber } =
+  const { name, fatherName, fatherWhatsapp, gender, dob, address, class: className, rollNumber, academicYear, parentContact, admissionDate, status, registrationNumber: providedRegNumber } =
     req.body;
 
   if (!name || !fatherName || !fatherWhatsapp || !gender || !dob || !className || !rollNumber) {
@@ -110,6 +110,7 @@ export const createStudent = async (req, res) => {
     address,
     class: className,
     rollNumber,
+    academicYear: academicYear || "2026",
     photoUrl,
     admissionDate: admissionDate || Date.now(),
     status: status || "Active",
@@ -135,6 +136,7 @@ export const updateStudent = async (req, res) => {
     "address",
     "class",
     "rollNumber",
+    "academicYear",
     "admissionDate",
     "status",
   ];
@@ -156,12 +158,24 @@ export const deleteStudent = async (req, res) => {
   const student = await Student.findById(req.params.id);
   if (!student) return res.status(404).json({ message: "Student not found" });
 
-  await Promise.all([
-    Attendance.deleteMany({ student: student._id }),
-    FeeChallan.deleteMany({ student: student._id }),
-    Result.deleteMany({ student: student._id }),
-    student.deleteOne(),
-  ]);
+  student.isDeleted = true;
+  student.deletedAt = new Date();
+  await student.save();
 
-  res.json({ message: "Student and linked records deleted successfully" });
+  res.json({ message: "Student soft-deleted successfully" });
+};
+
+// @desc Restore a soft-deleted student
+// @route PUT /api/students/:id/restore
+export const restoreStudent = async (req, res) => {
+  const result = await Student.updateOne(
+    { _id: req.params.id, isDeleted: true },
+    { isDeleted: false, deletedAt: null }
+  );
+
+  if (result.matchedCount === 0) {
+    return res.status(404).json({ message: "Deleted student not found" });
+  }
+
+  res.json({ message: "Student restored successfully" });
 };

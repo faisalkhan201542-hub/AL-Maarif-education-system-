@@ -28,6 +28,31 @@ async function restore() {
     
     const db = mongoose.connection.db;
     
+    const ObjectId = mongoose.Types.ObjectId;
+
+    function reviveTypes(obj) {
+      if (Array.isArray(obj)) {
+        return obj.map(reviveTypes);
+      } else if (obj !== null && typeof obj === 'object') {
+        const newObj = {};
+        for (const key in obj) {
+          let val = obj[key];
+          if (typeof val === 'string') {
+            if (/^[0-9a-fA-F]{24}$/.test(val)) {
+              val = new ObjectId(val);
+            } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(val)) {
+              val = new Date(val);
+            }
+          } else {
+            val = reviveTypes(val);
+          }
+          newObj[key] = val;
+        }
+        return newObj;
+      }
+      return obj;
+    }
+
     for (const [colName, data] of Object.entries(backupData)) {
       console.log(`Restoring collection: ${colName} (${data.length} documents)`);
       if (data.length > 0) {
@@ -37,7 +62,8 @@ async function restore() {
         } catch (e) {
           // Ignore error if collection doesn't exist
         }
-        await db.collection(colName).insertMany(data);
+        const processedData = reviveTypes(data);
+        await db.collection(colName).insertMany(processedData);
       }
     }
     

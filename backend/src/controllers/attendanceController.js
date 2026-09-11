@@ -9,11 +9,10 @@ export const getAttendanceByClassDate = async (req, res) => {
   if (!className || !date) return res.status(400).json({ message: "class and date are required" });
 
   const day = new Date(date);
-  const start = new Date(day.setHours(0, 0, 0, 0));
-  const end = new Date(day.setHours(23, 59, 59, 999));
+  const dateString = day.toISOString().split("T")[0];
 
   const students = await Student.find({ class: className, status: "Active" }).sort({ rollNumber: 1 });
-  const records = await Attendance.find({ class: className, date: { $gte: start, $lte: end } });
+  const records = await Attendance.find({ class: className, dateString });
 
   const merged = students.map((s) => {
     const record = records.find((r) => String(r.student) === String(s._id));
@@ -37,9 +36,9 @@ export const markBulkAttendance = async (req, res) => {
   }
 
   const day = new Date(date);
-  day.setHours(0, 0, 0, 0);
+  const dateString = day.toISOString().split("T")[0];
 
-  const existingRecords = await Attendance.find({ date: day, class: className });
+  const existingRecords = await Attendance.find({ dateString, class: className });
   const ops = [];
   const absentStudentIds = [];
 
@@ -48,8 +47,8 @@ export const markBulkAttendance = async (req, res) => {
 
     ops.push({
       updateOne: {
-        filter: { student: r.studentId, date: day },
-        update: { $set: { student: r.studentId, class: className, date: day, status: r.status, markedBy: "Principal" } },
+        filter: { student: r.studentId, dateString },
+        update: { $set: { student: r.studentId, class: className, date: day, dateString, status: r.status, markedBy: "Principal" } },
         upsert: true,
       },
     });

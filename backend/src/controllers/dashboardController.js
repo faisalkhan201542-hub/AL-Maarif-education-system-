@@ -9,8 +9,16 @@ import { CLASSES } from "../utils/constants.js";
 export const getDashboardStats = async (req, res) => {
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999);
+  const todayString = startOfToday.toISOString().split("T")[0];
+
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+  sixMonthsAgo.setDate(1);
+  sixMonthsAgo.setHours(0, 0, 0, 0);
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(startOfToday.getDate() - 6);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
 
   const [
     totalStudents,
@@ -26,11 +34,15 @@ export const getDashboardStats = async (req, res) => {
     recentAttendance,
     upcomingExams,
     announcements,
+    feeTrendsAgg,
+    admissionTrendsAgg,
+    attendanceTrendsAgg,
+    pendingFeesCount
   ] = await Promise.all([
     Student.countDocuments({ status: "Active" }),
     Teacher.countDocuments({ status: "Active" }),
-    Attendance.countDocuments({ date: { $gte: startOfToday, $lte: endOfToday }, status: "Present" }),
-    Attendance.countDocuments({ date: { $gte: startOfToday, $lte: endOfToday }, status: "Absent" }),
+    Attendance.countDocuments({ dateString: todayString, status: "Present" }),
+    Attendance.countDocuments({ dateString: todayString, status: "Absent" }),
     FeeChallan.aggregate([{ $group: { _id: null, total: { $sum: "$remainingAmount" } } }]),
     FeeChallan.aggregate([{ $group: { _id: null, total: { $sum: "$paidAmount" } } }]),
     Student.countDocuments({ gender: "Male", status: "Active" }),
@@ -40,6 +52,34 @@ export const getDashboardStats = async (req, res) => {
     Attendance.find().populate("student", "name registrationNumber class").sort({ createdAt: -1 }).limit(5),
     Exam.find({ examDate: { $gte: new Date() } }).sort({ examDate: 1 }).limit(5),
     Announcement.find({ status: "Active" }).sort({ date: -1 }).limit(5),
+
+    // Trends Data
+    FeeChallan.aggregate([
+      { $match: { paidDate: { $gte: sixMonthsAgo } } },
+      { $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$paidDate" } },
+          amount: { $sum: "$paidAmount" }
+      }},
+      { $sort: { _id: 1 } }
+    ]),
+    Student.aggregate([
+      { $match: { admissionDate: { $gte: sixMonthsAgo } } },
+      { $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$admissionDate" } },
+          students: { $sum: 1 }
+      }},
+      { $sort: { _id: 1 } }
+    ]),
+    Attendance.aggregate([
+      { $match: { date: { $gte: sevenDaysAgo } } },
+      { $group: {
+          _id: "$dateString",
+          present: { $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] } },
+          absent: { $sum: { $cond: [{ $eq: ["$status", "Absent"] }, 1, 0] } }
+      }},
+      { $sort: { _id: 1 } }
+    ]),
+    FeeChallan.countDocuments({ status: { $in: ["Pending", "Partial"] } })
   ]);
 
   res.json({
@@ -57,5 +97,9 @@ export const getDashboardStats = async (req, res) => {
     recentAttendance,
     upcomingExams,
     announcements,
+    feeTrends: feeTrendsAgg,
+    admissionTrends: admissionTrendsAgg,
+    attendanceTrends: attendanceTrendsAgg,
+    pendingFeesCount
   });
 };
