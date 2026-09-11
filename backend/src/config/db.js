@@ -1,7 +1,16 @@
 import mongoose from "mongoose";
 
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/al_maarif_education";
+  const isProduction = process.env.NODE_ENV === 'production';
+  let uri = process.env.MONGO_URI;
+  
+  if (isProduction || (uri && !uri.startsWith("mongodb://") && !uri.startsWith("mongodb+srv://"))) {
+    // Override with Atlas URI in production or if Render env var is broken
+    uri = "mongodb+srv://schooladmin123:Maarif@123@cluster0.faevmkq.mongodb.net/al_maarif_education?retryWrites=true&w=majority&appName=Cluster0";
+  } else {
+    // Local development fallback
+    uri = uri || "mongodb://127.0.0.1:27017/al_maarif_education";
+  }
   
   const options = {
     serverSelectionTimeoutMS: 5000,
