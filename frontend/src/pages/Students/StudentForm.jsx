@@ -23,6 +23,7 @@ export default function StudentForm() {
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -44,14 +45,26 @@ export default function StudentForm() {
   const handlePhoto = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPreview(URL.createObjectURL(file));
-      const base64 = await compressImage(file);
-      setPhoto(base64);
+      try {
+        setCompressing(true);
+        setPreview(URL.createObjectURL(file));
+        const base64 = await compressImage(file);
+        setPhoto(base64);
+      } catch (err) {
+        console.error("Photo compression error:", err);
+        toast.error("Failed to process photo. Please try a different image.");
+      } finally {
+        setCompressing(false);
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (compressing) {
+      toast.error("Please wait, photo is still being processed...");
+      return;
+    }
     setSaving(true);
     try {
       const payload = { ...form };
@@ -148,9 +161,11 @@ export default function StudentForm() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-2">
-          <button type="button" className="btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
-          <button type="submit" disabled={saving} className="btn-primary">{saving ? "Saving..." : "Save Student"}</button>
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onClick={() => navigate("/students")} className="btn-secondary">Cancel</button>
+          <button type="submit" disabled={saving || compressing} className="btn-primary">
+            {saving ? "Saving..." : compressing ? "Processing Photo..." : "Save Student"}
+          </button>
         </div>
       </form>
     </div>

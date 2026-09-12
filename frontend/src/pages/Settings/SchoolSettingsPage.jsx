@@ -15,11 +15,12 @@ export default function SchoolSettingsPage() {
   const [logo, setLogo] = useState(null);
   const [logoPreview, setLogoPreview] = useState("");
   const [saving, setSaving] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   useEffect(() => {
     if (settings) {
       setForm(settings);
-      if (settings.logoUrl) setLogoPreview(settings.logoUrl.startsWith("data:") ? settings.logoUrl : `${API_URL}${settings.logoUrl}`);
+      if (settings.logoUrl) setLogoPreview(settings.logoUrl.match(/^(http|data:)/) ? settings.logoUrl : `${API_URL}${settings.logoUrl}`);
     }
   }, [settings]);
 
@@ -40,14 +41,26 @@ export default function SchoolSettingsPage() {
   const handleLogoChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLogoPreview(URL.createObjectURL(file));
-      const base64 = await compressImage(file, 400, 400); // slightly larger for logo
-      setLogo(base64);
+      try {
+        setCompressing(true);
+        setLogoPreview(URL.createObjectURL(file));
+        const base64 = await compressImage(file, 400, 400); // slightly larger for logo
+        setLogo(base64);
+      } catch (err) {
+        console.error("Photo compression error:", err);
+        toast.error("Failed to process photo. Please try a different image.");
+      } finally {
+        setCompressing(false);
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (compressing) {
+      toast.error("Please wait, logo is still being processed...");
+      return;
+    }
     setSaving(true);
     try {
       const payload = { ...form };
@@ -114,8 +127,10 @@ export default function SchoolSettingsPage() {
           <p className="text-xs text-gray-400 mt-2">These base amounts will automatically populate when generating fee challans.</p>
         </div>
 
-        <div className="flex justify-end pt-4 border-t mt-6">
-          <button type="submit" disabled={saving} className="btn-primary px-6"><Save size={16}/> {saving ? "Saving..." : "Save Settings"}</button>
+        <div className="flex justify-end mt-8">
+          <button type="submit" disabled={saving || compressing} className="btn-primary flex items-center gap-2">
+            <Save size={16} /> {saving ? "Saving..." : compressing ? "Processing Logo..." : "Save Settings"}
+          </button>
         </div>
       </form>
     </div>

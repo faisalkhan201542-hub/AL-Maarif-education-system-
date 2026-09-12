@@ -14,14 +14,20 @@ export default function TeacherForm() {
   const navigate = useNavigate();
   const [form, setForm] = useState(empty);
   const [photo, setPhoto] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
       api.get(`/api/teachers/${id}`).then((res) => {
         const t = res.data;
-        setForm({ ...t, baseSalary: t.baseSalary || 0, joiningDate: t.joiningDate ? t.joiningDate.substring(0, 10) : "" });
+        setForm({
+          ...t,
+          joiningDate: t.joiningDate ? t.joiningDate.substring(0, 10) : "",
+        });
+        setPreview(t.photoUrl?.match(/^(http|data:)/) ? t.photoUrl : `${API_URL}${t.photoUrl}`);
         setLoading(false);
       });
     }
@@ -32,13 +38,26 @@ export default function TeacherForm() {
   const handlePhoto = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const base64 = await compressImage(file);
-      setPhoto(base64);
+      try {
+        setCompressing(true);
+        setPreview(URL.createObjectURL(file));
+        const base64 = await compressImage(file);
+        setPhoto(base64);
+      } catch (err) {
+        console.error("Photo compression error:", err);
+        toast.error("Failed to process photo. Please try a different image.");
+      } finally {
+        setCompressing(false);
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (compressing) {
+      toast.error("Please wait, photo is still being processed...");
+      return;
+    }
     setSaving(true);
     try {
       const payload = { ...form };
@@ -91,9 +110,11 @@ export default function TeacherForm() {
             </select>
           </div>
         </div>
-        <div className="flex justify-end gap-2 pt-2">
-          <button type="button" className="btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
-          <button type="submit" disabled={saving} className="btn-primary">{saving ? "Saving..." : "Save Teacher"}</button>
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onClick={() => navigate("/teachers")} className="btn-secondary">Cancel</button>
+          <button type="submit" disabled={saving || compressing} className="btn-primary">
+            {saving ? "Saving..." : compressing ? "Processing Photo..." : "Save Teacher"}
+          </button>
         </div>
       </form>
     </div>
