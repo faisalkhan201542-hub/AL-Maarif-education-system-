@@ -86,24 +86,6 @@ export default function Dashboard() {
       {/* Historical Analytics Charts */}
       <div className="grid md:grid-cols-2 gap-6">
         
-        <div className="card border-t-4 border-t-blue-500">
-          <h2 className="font-bold text-slate-800 dark:text-slate-100 mb-4">Monthly Revenue Collection (Last 6 Months)</h2>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={data.feeTrends}>
-              <defs>
-                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={1}/>
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.15} />
-              <XAxis dataKey="_id" tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} />
-              <YAxis tick={{fontSize: 12, fill: '#64748b'}} width={60} tickLine={false} axisLine={false} tickFormatter={(val) => `Rs.${val/1000}k`} />
-              <Tooltip cursor={{fill: 'transparent'}} formatter={(value) => [fmtMoney(value), "Collected"]} contentStyle={{ backgroundColor: 'var(--tw-colors-slate-900)', borderColor: 'var(--tw-colors-slate-700)', color: '#fff', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#fff' }} />
-              <Bar dataKey="amount" fill="url(#colorRevenue)" radius={[6, 6, 0, 0]} barSize={40} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
 
         <div className="card border-t-4 border-t-emerald-500">
           <h2 className="font-bold text-slate-800 dark:text-slate-100 mb-4">Admissions Growth (Last 6 Months)</h2>
