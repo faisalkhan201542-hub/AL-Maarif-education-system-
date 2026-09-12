@@ -156,7 +156,7 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.15} />
                 <XAxis dataKey="_id" tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} />
                 <YAxis tick={{fontSize: 12, fill: '#64748b'}} width={40} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
-                <Tooltip cursor={{fill: 'transparent'}} formatter={(value, name) => [name === 'percentage' ? `${value}%` : value, name === 'percentage' ? "Attendance" : name === 'present' ? "Present" : "Absent"]} contentStyle={{ backgroundColor: 'var(--tw-colors-slate-900)', borderColor: 'var(--tw-colors-slate-700)', color: '#fff', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#fff' }} />
+                <Tooltip cursor={{fill: 'transparent'}} formatter={(value, name) => [name === 'percentage' ? `${value}%` : value, name === 'percentage' ? "Attendance" : name === 'present' ? "Present" : "Absent"]} contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#fff', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#fff' }} />
                 <Bar dataKey="percentage" fill="#f97316" radius={[4, 4, 0, 0]} barSize={30}>
                   {data.classWiseAttendance.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.percentage < 50 ? '#ef4444' : entry.percentage < 75 ? '#eab308' : '#22c55e'} />
