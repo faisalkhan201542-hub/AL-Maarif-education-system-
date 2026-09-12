@@ -9,7 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const empty = {
   registrationNumber: "", admissionNumber: "", name: "", fatherName: "", fatherWhatsapp: "", parentContact: "",
-  gender: "Male", dob: "", address: "", class: "KG", rollNumber: "",
+  gender: "Male", dob: "", address: "", class: CLASSES[0], rollNumber: "",
   admissionDate: "", status: "Active",
 };
 

@@ -4,8 +4,7 @@ import { Plus, Trash2, Edit, X, UserSearch } from "lucide-react";
 import api from "../../api/axios.js";
 import toast from "react-hot-toast";
 import PageHeader from "../../components/PageHeader.jsx";
-
-const CLASSES = ["KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+import { CLASSES } from "../../utils/constants.js";
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const DEFAULT_TIMES = {
@@ -54,7 +53,7 @@ export default function TimetablePage() {
 
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
-    day: "Monday", class: "KG", periodNumber: 1, subject: "", teacher: "", startTime: "08:00 AM", endTime: "08:45 AM"
+    day: "Monday", class: CLASSES[0], periodNumber: 1, subject: "", teacher: "", startTime: "08:00 AM", endTime: "08:45 AM"
   });
   const [editingId, setEditingId] = useState(null);
 
@@ -137,7 +136,7 @@ export default function TimetablePage() {
     return allTimetable.find(t => t.day === selectedDay && t.class === cls && t.periodNumber === periodNum);
   };
 
-  const openForm = (item = null, cls = "KG", periodNum = 1) => {
+  const openForm = (item = null, cls = CLASSES[0], periodNum = 1) => {
     if (item) {
       setEditingId(item._id);
       setForm({

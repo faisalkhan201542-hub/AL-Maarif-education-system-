@@ -1,8 +1,10 @@
 export const CLASSES = [
-  "KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th",
+  "Play Group", "Nursery", "KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th",
 ];
 
 export const SUBJECTS_BY_CLASS = {
+  "Play Group": ["English", "Urdu", "Math", "Drawing", "Rhymes"],
+  "Nursery": ["English", "Urdu", "Math", "Drawing", "Rhymes"],
   KG: ["English", "Urdu", "Math", "Drawing"],
   "1st": ["English", "Urdu", "Math", "Science", "Islamiyat"],
   "2nd": ["English", "Urdu", "Math", "Science", "Islamiyat"],

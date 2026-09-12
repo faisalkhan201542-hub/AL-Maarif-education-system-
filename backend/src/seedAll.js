@@ -25,7 +25,7 @@ const connectDB = async () => {
 };
 
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-const CLASSES = ["KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+const CLASSES = ["Play Group", "Nursery", "KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8];
 const SUBJECTS = ["Maths", "English", "Urdu", "Science", "Islamiyat", "Drawing", "History", "Arabic"];

@@ -4,8 +4,7 @@ import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
 import PageHeader from "../../components/PageHeader.jsx";
 import toast from "react-hot-toast";
-
-const CLASSES = ["KG", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+import { CLASSES } from "../../utils/constants.js";
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const DEFAULT_TIMES = {
@@ -22,7 +21,7 @@ const DEFAULT_TIMES = {
 export default function SubjectList() {
   const [subjects, setSubjects] = useState(null);
   const [teachers, setTeachers] = useState([]);
-  const [selectedClass, setSelectedClass] = useState("KG");
+  const [selectedClass, setSelectedClass] = useState(CLASSES[0]);
   
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);

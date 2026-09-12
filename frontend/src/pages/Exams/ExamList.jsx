@@ -10,7 +10,7 @@ import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 import { CLASSES, EXAM_TYPES } from "../../utils/constants.js";
 import { fmtDate } from "../../utils/format.js";
 
-const emptyForm = { title: "", examType: "Monthly Test", class: "KG", examDate: "", totalMarksPerSubject: 100 };
+const emptyForm = { title: "", examType: "Monthly Test", class: CLASSES[0], examDate: "", totalMarksPerSubject: 100 };
 
 export default function ExamList() {
   const [exams, setExams] = useState([]);

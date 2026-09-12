@@ -24,7 +24,7 @@ const schoolSettingsSchema = new mongoose.Schema(
     feeStructure: {
       type: mongoose.Schema.Types.Mixed,
       default: {
-        "KG": 3000, "1st": 3200, "2nd": 3200, "3rd": 3500, "4th": 3500, "5th": 3800,
+        "Play Group": 2500, "Nursery": 2800, "KG": 3000, "1st": 3200, "2nd": 3200, "3rd": 3500, "4th": 3500, "5th": 3800,
         "6th": 4000, "7th": 4200, "8th": 4200, "9th": 4800, "10th": 5000,
       }
     }
