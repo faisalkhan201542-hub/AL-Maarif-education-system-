@@ -8,7 +8,7 @@ import ConfirmDialog from "../../components/ConfirmDialog.jsx";
 import WhatsAppButton from "../../components/WhatsAppButton.jsx";
 import { fmtDate, fmtMoney, statusBadgeClass } from "../../utils/format.js";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 export default function StudentProfile() {
   const { id } = useParams();

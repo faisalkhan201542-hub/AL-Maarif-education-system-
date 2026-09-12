@@ -5,7 +5,7 @@ import api from "../../api/axios.js";
 import { CLASSES, GENDERS, STUDENT_STATUS } from "../../utils/constants.js";
 import Loader from "../../components/Loader.jsx";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 const empty = {
   registrationNumber: "", admissionNumber: "", name: "", fatherName: "", fatherWhatsapp: "", parentContact: "",

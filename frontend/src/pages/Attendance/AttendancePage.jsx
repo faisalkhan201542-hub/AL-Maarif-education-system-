@@ -9,7 +9,7 @@ import WhatsAppDispatchQueue from "../../components/WhatsAppDispatchQueue.jsx";
 import { CLASSES } from "../../utils/constants.js";
 import ExportButtons from "../../components/ExportButtons.jsx";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 const todayStr = () => new Date().toISOString().substring(0, 10);
 
 export default function AttendancePage() {

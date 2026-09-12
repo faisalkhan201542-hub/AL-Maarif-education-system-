@@ -8,7 +8,7 @@ import Logo from "../../components/Logo.jsx";
 import { useSettings } from "../../context/SettingsContext.jsx";
 import { fmtDate, fmtMoney, statusBadgeClass } from "../../utils/format.js";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 export default function FeeChallanPrint() {
   const { id } = useParams();

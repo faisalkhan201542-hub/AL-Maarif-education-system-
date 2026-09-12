@@ -10,7 +10,7 @@ import WhatsAppButton from "../../components/WhatsAppButton.jsx";
 import PageHeader from "../../components/PageHeader.jsx";
 import ExportButtons from "../../components/ExportButtons.jsx";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 export default function TeacherList() {
   const navigate = useNavigate();

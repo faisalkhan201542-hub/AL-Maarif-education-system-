@@ -1,7 +1,7 @@
 import { useSettings } from "../context/SettingsContext.jsx";
 import { GraduationCap } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 export default function Logo({ size = 40, showName = true, dark = false }) {
   const { settings } = useSettings();

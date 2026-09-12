@@ -9,7 +9,7 @@ import WhatsAppButton from "../../components/WhatsAppButton.jsx";
 import { fmtMoney } from "../../utils/format.js";
 import { Users, CalendarCheck, CalendarX, Wallet, Award } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 export default function ClassDetail() {
   const { name } = useParams();

@@ -11,7 +11,7 @@ import PageHeader from "../../components/PageHeader.jsx";
 import { CLASSES } from "../../utils/constants.js";
 import ExportButtons from "../../components/ExportButtons.jsx";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 export default function StudentList() {
   const navigate = useNavigate();

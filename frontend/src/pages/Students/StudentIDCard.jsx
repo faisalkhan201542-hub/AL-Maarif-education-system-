@@ -6,7 +6,7 @@ import Loader from "../../components/Loader.jsx";
 import Logo from "../../components/Logo.jsx";
 import { useSettings } from "../../context/SettingsContext.jsx";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
 export default function StudentIDCard() {
   const { id } = useParams();
