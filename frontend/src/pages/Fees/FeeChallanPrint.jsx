@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, MessageCircle } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
 import Logo from "../../components/Logo.jsx";
@@ -100,15 +100,6 @@ export default function FeeChallanPrint() {
             <div className="mt-2 text-[10px]">
               <p>Txn Ref: {challan.transactionReference || "_______________"}</p>
             </div>
-          </div>
-          
-          <div className="flex flex-col items-center justify-center p-1 border rounded bg-white dark:bg-slate-800">
-            <QRCodeSVG 
-              value={`CHALLAN:${challan.challanNumber}|AMT:${challan.totalAmount}|STU:${s.registrationNumber}`} 
-              size={64}
-              level={"H"}
-            />
-            <span className="text-[8px] mt-1 text-slate-400 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">Scan to Verify</span>
           </div>
         </div>
 
