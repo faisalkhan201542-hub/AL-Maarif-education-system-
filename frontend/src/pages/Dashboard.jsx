@@ -165,6 +165,29 @@ export default function Dashboard() {
             </PieChart>
           </ResponsiveContainer>
         </div>
+
+        <div className="card border-t-4 border-t-orange-500">
+          <h2 className="font-bold text-slate-800 dark:text-slate-100 mb-4">Class-wise Attendance (Today)</h2>
+          <ResponsiveContainer width="100%" height={260}>
+            {data.classWiseAttendance && data.classWiseAttendance.length > 0 ? (
+              <BarChart data={data.classWiseAttendance}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.15} />
+                <XAxis dataKey="_id" tick={{fontSize: 12, fill: '#64748b'}} tickLine={false} axisLine={false} />
+                <YAxis tick={{fontSize: 12, fill: '#64748b'}} width={40} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}%`} domain={[0, 100]} />
+                <Tooltip cursor={{fill: 'transparent'}} formatter={(value, name) => [name === 'percentage' ? `${value}%` : value, name === 'percentage' ? "Attendance" : name === 'present' ? "Present" : "Absent"]} contentStyle={{ backgroundColor: 'var(--tw-colors-slate-900)', borderColor: 'var(--tw-colors-slate-700)', color: '#fff', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} itemStyle={{ color: '#fff' }} />
+                <Bar dataKey="percentage" fill="#f97316" radius={[4, 4, 0, 0]} barSize={30}>
+                  {data.classWiseAttendance.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.percentage < 50 ? '#ef4444' : entry.percentage < 75 ? '#eab308' : '#22c55e'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            ) : (
+              <div className="flex h-full items-center justify-center text-sm text-slate-500 dark:text-slate-400">
+                No attendance marked today.
+              </div>
+            )}
+          </ResponsiveContainer>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">

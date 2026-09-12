@@ -38,7 +38,8 @@ export const getDashboardStats = async (req, res) => {
     feeTrendsAgg,
     admissionTrendsAgg,
     attendanceTrendsAgg,
-    pendingFeesCount
+    pendingFeesCount,
+    classWiseAttendance
   ] = await Promise.all([
     Student.countDocuments({ status: "Active" }),
     Teacher.countDocuments({ status: "Active" }),
@@ -80,7 +81,23 @@ export const getDashboardStats = async (req, res) => {
       }},
       { $sort: { _id: 1 } }
     ]),
-    FeeChallan.countDocuments({ status: { $in: ["Pending", "Partial"] } })
+    FeeChallan.countDocuments({ status: { $in: ["Pending", "Partial"] } }),
+    Attendance.aggregate([
+      { $match: { dateString: todayString } },
+      { $group: {
+          _id: "$class",
+          present: { $sum: { $cond: [{ $eq: ["$status", "Present"] }, 1, 0] } },
+          absent: { $sum: { $cond: [{ $eq: ["$status", "Absent"] }, 1, 0] } },
+          total: { $sum: 1 }
+      }},
+      { $project: {
+          _id: 1,
+          present: 1,
+          absent: 1,
+          percentage: { $round: [{ $multiply: [{ $divide: ["$present", "$total"] }, 100] }, 1] }
+      }},
+      { $sort: { percentage: 1 } } // Sort by lowest attendance first
+    ])
   ]);
 
   res.json({
@@ -101,6 +118,7 @@ export const getDashboardStats = async (req, res) => {
     feeTrends: feeTrendsAgg,
     admissionTrends: admissionTrendsAgg,
     attendanceTrends: attendanceTrendsAgg,
-    pendingFeesCount
+    pendingFeesCount,
+    classWiseAttendance
   });
 };
