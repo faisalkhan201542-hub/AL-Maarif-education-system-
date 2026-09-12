@@ -137,7 +137,7 @@ export default function TeacherList() {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
               {teachers.map((t) => (
                 <tr key={t._id} className="hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50">
-                  <td className="td"><img src={t.photoUrl?.startsWith("http") ? t.photoUrl : `${API_URL}${t.photoUrl}`} className="w-9 h-9 rounded-full object-cover bg-slate-100 dark:bg-slate-800" alt={t.name} /></td>
+                  <td className="td"><img src={t.photoUrl?.match(/^(http|data:)/) ? t.photoUrl : `${API_URL}${t.photoUrl}`} className="w-9 h-9 rounded-full object-cover bg-slate-100 dark:bg-slate-800" alt={t.name} /></td>
                   <td className="td font-mono text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{t.teacherId}</td>
                   <td className="td font-medium text-slate-800 dark:text-slate-200">{t.name}</td>
                   <td className="td">{t.subject}</td>

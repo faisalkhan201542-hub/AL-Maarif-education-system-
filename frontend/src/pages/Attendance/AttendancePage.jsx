@@ -183,7 +183,7 @@ export default function AttendancePage() {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
               {sortedRows.map((r) => (
                 <tr key={r.student._id} className="hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50">
-                  <td className="td"><img src={r.student.photoUrl?.startsWith("http") ? r.student.photoUrl : `${API_URL}${r.student.photoUrl}`} className="w-8 h-8 rounded-full object-cover bg-slate-100 dark:bg-slate-800" alt="" /></td>
+                  <td className="td"><img src={r.student.photoUrl?.match(/^(http|data:)/) ? r.student.photoUrl : `${API_URL}${r.student.photoUrl}`} className="w-8 h-8 rounded-full object-cover bg-slate-100 dark:bg-slate-800" alt="" /></td>
                   <td className="td font-semibold">{r.student.rollNumber}</td>
                   <td className="td font-medium text-slate-800 dark:text-slate-200">{r.student.name}</td>
                   <td className="td">

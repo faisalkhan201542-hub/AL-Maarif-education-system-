@@ -53,7 +53,7 @@ export default function ClassDetail() {
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {data.students.map((s) => (
               <tr key={s._id} className="hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50">
-                <td className="td"><img src={s.photoUrl?.startsWith("http") ? s.photoUrl : `${API_URL}${s.photoUrl}`} className="w-8 h-8 rounded-full object-cover" alt={s.name} /></td>
+                <td className="td"><img src={s.photoUrl?.match(/^(http|data:)/) ? s.photoUrl : `${API_URL}${s.photoUrl}`} className="w-8 h-8 rounded-full object-cover" alt={s.name} /></td>
                 <td className="td font-mono text-xs">{s.registrationNumber}</td>
                 <td className="td font-medium">{s.name}</td>
                 <td className="td">{s.fatherName}</td>

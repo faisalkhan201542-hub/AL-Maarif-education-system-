@@ -186,7 +186,7 @@ export default function StudentList() {
               {students.map((s) => (
                 <tr key={s._id} className="hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-800/50 cursor-pointer" onClick={() => navigate(`/students/${s._id}`)}>
                   <td className="td">
-                    <img src={s.photoUrl?.startsWith("http") ? s.photoUrl : `${API_URL}${s.photoUrl}`} alt={s.name} className="w-9 h-9 rounded-full object-cover bg-slate-100 dark:bg-slate-800" />
+                    <img src={s.photoUrl?.match(/^(http|data:)/) ? s.photoUrl : `${API_URL}${s.photoUrl}`} alt={s.name} className="w-9 h-9 rounded-full object-cover bg-slate-100 dark:bg-slate-800" />
                   </td>
                   <td className="td font-mono text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">{s.registrationNumber}</td>
                   <td className="td font-medium text-slate-800 dark:text-slate-200">{s.name}</td>

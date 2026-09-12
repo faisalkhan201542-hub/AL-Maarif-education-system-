@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import api from "../../api/axios.js";
 import { CLASSES, GENDERS, STUDENT_STATUS } from "../../utils/constants.js";
 import Loader from "../../components/Loader.jsx";
+import { compressImage } from "../../utils/imageCompressor.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
@@ -32,7 +33,7 @@ export default function StudentForm() {
           dob: s.dob ? s.dob.substring(0, 10) : "",
           admissionDate: s.admissionDate ? s.admissionDate.substring(0, 10) : "",
         });
-        setPreview(s.photoUrl?.startsWith("http") ? s.photoUrl : `${API_URL}${s.photoUrl}`);
+        setPreview(s.photoUrl?.match(/^(http|data:)/) ? s.photoUrl : `${API_URL}${s.photoUrl}`);
         setLoading(false);
       });
     }
@@ -40,11 +41,12 @@ export default function StudentForm() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handlePhoto = (e) => {
+  const handlePhoto = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPhoto(file);
       setPreview(URL.createObjectURL(file));
+      const base64 = await compressImage(file);
+      setPhoto(base64);
     }
   };
 
@@ -52,19 +54,14 @@ export default function StudentForm() {
     e.preventDefault();
     setSaving(true);
     try {
-      const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => {
-        if (v !== undefined && v !== null && !["_id", "createdAt", "updatedAt", "__v", "photoUrl"].includes(k)) {
-          fd.append(k, v);
-        }
-      });
-      if (photo) fd.append("photo", photo);
+      const payload = { ...form };
+      if (photo) payload.photoBase64 = photo;
 
       if (isEdit) {
-        await api.put(`/api/students/${id}`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+        await api.put(`/api/students/${id}`, payload);
         toast.success("Student updated");
       } else {
-        const res = await api.post("/api/students", fd, { headers: { "Content-Type": "multipart/form-data" } });
+        const res = await api.post("/api/students", payload);
         toast.success(`Student added — Registration No: ${res.data.registrationNumber}`);
       }
       navigate("/students");

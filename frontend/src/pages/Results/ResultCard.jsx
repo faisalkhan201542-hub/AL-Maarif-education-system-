@@ -20,7 +20,7 @@ export default function ResultCard() {
 
   if (!result) return <Loader />;
   const s = result.student;
-  const photo = s.photoUrl?.startsWith("http") ? s.photoUrl : `${API_URL}${s.photoUrl}`;
+  const photo = s.photoUrl?.match(/^(http|data:)/) ? s.photoUrl : `${API_URL}${s.photoUrl}`;
 
   // Helper for grade colors
   const getGradeColor = (grade) => {

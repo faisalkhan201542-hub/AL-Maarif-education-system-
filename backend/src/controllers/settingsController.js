@@ -30,14 +30,16 @@ export const updateSettings = async (req, res) => {
 
   if (req.body.feeStructure) {
     try {
-      settings.feeStructure = JSON.parse(req.body.feeStructure);
+      settings.feeStructure = typeof req.body.feeStructure === 'string' ? JSON.parse(req.body.feeStructure) : req.body.feeStructure;
       settings.markModified("feeStructure");
     } catch (e) {
       console.error("Invalid feeStructure format");
     }
   }
 
-  if (req.files) {
+  if (req.body.logoBase64) {
+    settings.logoUrl = req.body.logoBase64;
+  } else if (req.files) {
     if (req.files.logo && req.files.logo[0]) {
       const fs = await import("fs");
       const file = req.files.logo[0];

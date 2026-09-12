@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
 import { CLASSES } from "../../utils/constants.js";
+import { compressImage } from "../../utils/imageCompressor.js";
 
 const empty = { name: "", phone: "", whatsapp: "", qualification: "", subject: "", baseSalary: 0, joiningDate: "", assignedClass: "", status: "Active" };
 
@@ -28,21 +29,26 @@ export default function TeacherForm() {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const handlePhoto = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const base64 = await compressImage(file);
+      setPhoto(base64);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => {
-        if (!["_id", "teacherId", "createdAt", "updatedAt", "__v", "photoUrl"].includes(k) && v !== undefined) fd.append(k, v);
-      });
-      if (photo) fd.append("photo", photo);
+      const payload = { ...form };
+      if (photo) payload.photoBase64 = photo;
 
       if (isEdit) {
-        await api.put(`/api/teachers/${id}`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+        await api.put(`/api/teachers/${id}`, payload);
         toast.success("Teacher updated");
       } else {
-        await api.post("/api/teachers", fd, { headers: { "Content-Type": "multipart/form-data" } });
+        await api.post("/api/teachers", payload);
         toast.success("Teacher added");
       }
       navigate("/teachers");
@@ -61,7 +67,7 @@ export default function TeacherForm() {
       <form onSubmit={handleSubmit} className="card space-y-4">
         <div>
           <label className="label">Photo</label>
-          <input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files[0])} className="text-sm" />
+          <input type="file" accept="image/*" onChange={handlePhoto} className="text-sm" />
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           <div><label className="label">Name *</label><input name="name" required className="input" value={form.name} onChange={handleChange} /></div>

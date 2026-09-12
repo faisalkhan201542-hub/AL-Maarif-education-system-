@@ -26,7 +26,7 @@ export default function FeeChallanPrint() {
 
   if (!challan) return <Loader />;
   const s = challan.student;
-  const photo = s.photoUrl?.startsWith("http") ? s.photoUrl : `${API_URL}${s.photoUrl}`;
+  const photo = s.photoUrl?.match(/^(http|data:)/) ? s.photoUrl : `${API_URL}${s.photoUrl}`;
 
   const rows = [
     ["Monthly Fee", challan.feeAmount],

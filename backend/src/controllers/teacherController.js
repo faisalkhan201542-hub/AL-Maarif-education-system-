@@ -34,7 +34,7 @@ export const createTeacher = async (req, res) => {
     return res.status(400).json({ message: "Name, phone and WhatsApp are required" });
   }
   const teacherId = await generateTeacherId();
-  const photoUrl = req.file ? `/uploads/teachers/${req.file.filename}` : "";
+  const photoUrl = req.body.photoBase64 || (req.file ? `/uploads/teachers/${req.file.filename}` : "");
 
   const teacher = await Teacher.create({
     teacherId,
@@ -60,7 +60,11 @@ export const updateTeacher = async (req, res) => {
   fields.forEach((f) => {
     if (req.body[f] !== undefined) teacher[f] = req.body[f];
   });
-  if (req.file) teacher.photoUrl = `/uploads/teachers/${req.file.filename}`;
+  if (req.body.photoBase64) {
+    teacher.photoUrl = req.body.photoBase64;
+  } else if (req.file) {
+    teacher.photoUrl = `/uploads/teachers/${req.file.filename}`;
+  }
 
   await teacher.save();
   res.json(teacher);

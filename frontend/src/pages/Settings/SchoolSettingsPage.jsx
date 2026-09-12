@@ -5,6 +5,7 @@ import api from "../../api/axios.js";
 import Loader from "../../components/Loader.jsx";
 import { useSettings } from "../../context/SettingsContext.jsx";
 import { CLASSES } from "../../utils/constants.js";
+import { compressImage } from "../../utils/imageCompressor.js";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://al-maarif-education-system.onrender.com";
 
@@ -36,11 +37,12 @@ export default function SchoolSettingsPage() {
     });
   };
 
-  const handleLogoChange = (e) => {
+  const handleLogoChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLogo(file);
       setLogoPreview(URL.createObjectURL(file));
+      const base64 = await compressImage(file, 400, 400); // slightly larger for logo
+      setLogo(base64);
     }
   };
 
@@ -48,15 +50,10 @@ export default function SchoolSettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const fd = new FormData();
-      Object.entries(form).forEach(([k, v]) => {
-        if (!["_id", "createdAt", "updatedAt", "__v", "logoUrl", "feeStructure"].includes(k) && v !== undefined) fd.append(k, v);
-      });
-      if (form.feeStructure) {
-        fd.append("feeStructure", JSON.stringify(form.feeStructure));
-      }
-      if (logo) fd.append("logo", logo);
-      await api.put("/api/settings", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      const payload = { ...form };
+      if (logo) payload.logoBase64 = logo;
+
+      await api.put("/api/settings", payload);
       toast.success("Settings updated");
       refresh();
     } catch (err) {

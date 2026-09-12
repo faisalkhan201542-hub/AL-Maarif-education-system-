@@ -19,7 +19,7 @@ export default function StudentIDCard() {
   }, [id]);
 
   if (!student) return <Loader />;
-  const photo = student.photoUrl?.startsWith("http") ? student.photoUrl : `${API_URL}${student.photoUrl}`;
+  const photo = student.photoUrl?.match(/^(http|data:)/) ? student.photoUrl : `${API_URL}${student.photoUrl}`;
 
   return (
     <div className="max-w-3xl mx-auto space-y-4">

@@ -32,7 +32,7 @@ export default function StudentProfile() {
 
   if (!bundle) return <Loader />;
   const { student, attendance, fees, results } = bundle;
-  const photo = student.photoUrl?.startsWith("http") ? student.photoUrl : `${API_URL}${student.photoUrl}`;
+  const photo = student.photoUrl?.match(/^(http|data:)/) ? student.photoUrl : `${API_URL}${student.photoUrl}`;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">

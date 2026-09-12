@@ -96,7 +96,7 @@ export const createStudent = async (req, res) => {
   const registrationNumber = providedRegNumber || await generateRegistrationNumber();
   const admissionNumber = await generateAdmissionNumber();
 
-  const photoUrl = req.file ? `/uploads/students/${req.file.filename}` : "";
+  const photoUrl = req.body.photoBase64 || (req.file ? `/uploads/students/${req.file.filename}` : "");
 
   const student = await Student.create({
     registrationNumber,
@@ -144,7 +144,9 @@ export const updateStudent = async (req, res) => {
     if (req.body[f] !== undefined) student[f] = req.body[f];
   });
 
-  if (req.file) {
+  if (req.body.photoBase64) {
+    student.photoUrl = req.body.photoBase64;
+  } else if (req.file) {
     student.photoUrl = `/uploads/students/${req.file.filename}`;
   }
 

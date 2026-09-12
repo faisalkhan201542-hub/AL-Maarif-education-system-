@@ -64,7 +64,7 @@ export default function StudentIdCardBulk() {
         */
         <div className="flex flex-wrap gap-6 justify-center items-start print:gap-4 print:justify-start mx-auto max-w-7xl print:max-w-none">
           {students.map(student => {
-            const photo = student.photoUrl?.startsWith("http") ? student.photoUrl : `${API_URL}${student.photoUrl}`;
+            const photo = student.photoUrl?.match(/^(http|data:)/) ? student.photoUrl : `${API_URL}${student.photoUrl}`;
             
             return (
               <div key={student._id} className="flex flex-col sm:flex-row gap-4 print:gap-1 break-inside-avoid" style={{pageBreakInside: 'avoid'}}>
